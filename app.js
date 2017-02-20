@@ -1,48 +1,90 @@
 var cfenv = require("cfenv");
 require('dotenv').load();
+
+//Инициализация веб-сервера и основных настроек
 var express = require("express");
 var app = express();
-
 app.use(express.static(__dirname + '/public'));
-
+var options = {
+    root: __dirname + '/public/',
+    dotfiles: 'deny',
+    headers: {
+        'x-timestamp': Date.now(),
+        'x-sent': true
+    }
+};
+//Инициализация IOT-сервиса
+var Client = require("ibmiotf");
+var config = {
+    "org" : "kwxqcy",
+    "type" : "gwtype",
+    "id" : "Gateway01",
+    "domain": "internetofthings.ibmcloud.com",
+    "auth-method" : "token",
+    "auth-token" : "qwerty123"
+};
+var gatewayClient = new Client.IotfGateway(config);
+gatewayClient.log.setLevel('debug');
+gatewayClient.connect();
+//----Инициализация подключения к MySQL
+var mysql = require('mysql');
+var db = mysql.createConnection({
+    host: 'sl-us-dal-9-portal.3.dblayer.com',
+    port: '19904',
+    user: 'admin',
+    password: 'OOYHORSHUNYPKLAF',
+    database: 'compose'
+});
+createTable();
+//-------------Основной исполняемый код----------------------------
 app.get('/', function (req, res) {
-    var options = {
-        root: __dirname + '/public/',
-        dotfiles: 'deny',
-        headers: {
-            'x-timestamp': Date.now(),
-            'x-sent': true
-        }
-    };
     var fileName = "index.html";
     res.sendFile(fileName, options);
 });
-app.post("/savedevice", function(req, res) {
-   console.log('Начато создание устройства в базу данных');
-    if (req.method == 'POST') {
-        var jsonString = '';
+app.get("/savedevice", function(req, res) {
+    var orgid = req.query.orgid;
+    var devid = req.query.devid;
+    var devtype = req.query.devtype;
+    gatewayClient.publishDeviceEvent(devtype,devid, "status","json",'{"d" : { "cpu" : 60, "mem" : 50 }}');
+    saveDeviceToMySql(orgid, devid, devtype);
 
-        req.on('data', function (data) {
-            jsonString += data;
-        });
-
-        req.on('end', function () {
-            console.log(JSON.parse(jsonString));
-        });
-    }
-  res.send("");
+    var fileName = "devices.html";
+    res.sendFile(fileName, options);
 });
 
 //Код для запуска в локальном режиме
-var hostPort = 4444;
+/*var hostPort = 4444;
 app.listen(hostPort, function () {
     console.log('Example app listening on port: ' + hostPort);
-});
+});*/
 
 
 //Код для публикации на Bluemix-сервере
-/*var appEnv = cfenv.getAppEnv();
+var appEnv = cfenv.getAppEnv();
  app.listen(appEnv.port, '0.0.0.0', function () {
  console.log('Example app listening on port 3000!');
- });*/
+ });
+
+//---CRUD operation for mysql db----
+function createTable() {
+    var sql = 'CREATE TABLE IF NOT EXISTS devices ('
+        + 'id INTEGER PRIMARY KEY AUTO_INCREMENT,'
+        + 'orgid text,'
+        + 'devid text,'
+        + 'devtype text'
+        + ');';
+    db.query(sql, function (err, result) {
+        if (err) console.log(err);
+    });
+}
+function saveDeviceToMySql(orgid, devid, devtype) {
+    var sql = 'INSERT INTO devices SET ?';
+    var newDevice = { orgid: orgid, devid: devid,  devtype: devtype};
+
+
+    db.query(sql, [newDevice], function (err, result) {
+        if(err) throw err;
+        console.log('Last insert ID:', result.insertId);
+    });
+}
 
