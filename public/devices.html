@@ -32,7 +32,43 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+    <style type="text/css">
+        .modal-dialog {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            width:500px;
+            height:300px;
+        }
+        #wrap {
+            padding:2em;
+        }
+        .panel.panel-horizontal {
+            display:table;
+            width:100%;
+        }
+        .panel.panel-horizontal > .panel-heading, .panel.panel-horizontal > .panel-body, .panel.panel-horizontal > .panel-footer {
+            display:table-cell;
+        }
+        .panel.panel-horizontal > .panel-heading, .panel.panel-horizontal > .panel-footer {
+            width: 25%;
+            border:0;
+            vertical-align: middle;
+        }
+        .panel.panel-horizontal > .panel-heading {
+            border-right: 1px solid #ddd;
+            border-top-right-radius: 0;
+            border-bottom-left-radius: 4px;
+        }
+        .panel.panel-horizontal > .panel-footer {
+            border-left: 1px solid #ddd;
+            border-top-left-radius: 0;
+            border-bottom-right-radius: 4px;
+        }
+    </style>
 </head>
 
 <body>
@@ -236,8 +272,8 @@
                                     <i class="fa fa-comments fa-5x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
-                                    <div class="huge">26</div>
-                                    <div>New Comments!</div>
+                                    <div class="huge" id="devqty"></div>
+                                    <div>Количество устройств</div>
                                 </div>
                             </div>
                         </div>
@@ -322,8 +358,7 @@
             <!-- Modal -->
             <div class="modal fade" id="myModal" role="dialog">
                 <div class="modal-dialog">
-
-                    <!-- Modal content-->
+                    <!-- Modal content Device creation-->
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -333,7 +368,7 @@
                             <form action="\savedevice" method="get">
                                 <div class="form-group">
                                     <label for="orgid">Организация:</label>
-                                    <input type="text" class="form-control" id="orgid" name="orgid">
+                                    <input type="text" value="C2M" class="form-control" id="orgid" name="orgid">
                                 </div>
                                 <div class="form-group">
                                     <label for="devid">Код устройства:</label>
@@ -341,18 +376,80 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="devtype">Тип устройства:</label>
-                                    <input type="text" class="form-control" id="devtype" name="devtype">
+                                    <input type="text" value="myType" class="form-control" id="devtype" name="devtype">
                                 </div>
                                 <button type="submit" class="btn btn-default">Создать</button>
                             </form>
                         </div>
-
                     </div>
-
                 </div>
             </div>
 
+            <div class="modal fade" id="modalManageWindow" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content Device creation-->
+                    <div class="modal-content" style="width: 1000px">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h2 class="modal-title">Управление устройством</h2>
+                            <div class="container">
+                                <div class="row">
+                                    <div id="divOrgId" class="col-sm-2" style="font-size: larger"></div>
+                                    <div id="divDevice" class="col-sm-2" style="font-size: larger"></div>
+                                    <div id="divType" class="col-sm-2" style="font-size: larger"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-body">
+                            <div class="panel panel-default panel-horizontal">
+                                <div class="panel-body">
+                                    <button id="releON" type="button" class="btn btn-primary btn-block"
+                                            style="height: 200px; width: 200px"
+                                            onClick="TurnReleON();"><h4>Включить <br>  РЕЛЕ</h4></button>
+                                </div>
+                                <div class="panel-body">
+                                    <button id="releOff" type="button" class="btn btn-primary btn-block"
+                                            style="height: 200px; width: 200px"
+                                            onClick="TurnReleOff();"><h4>Выключить <br>  РЕЛЕ</h4></button>
+                                </div>
+                                <div class="panel-body">
+                                    <button type="button" class="btn btn-primary btn-block"
+                                            style="height: 200px; width: 200px"
+                                            onClick="SubscribeBluemix();"><h4>Подписаться <br> на Bluemix</h4></button>
+                                </div>
+                                <div class="panel-body">
+                                    <button type="button" class="btn btn-primary btn-block"
+                                            style="height: 200px; width: 200px"
+                                            onClick="downloadCloudantData();">
+                                        <h4>Загрузить<br> данные</h4>
+                                    </button>
+                                </div>
 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalDeviceDelete" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content Device creation-->
+                    <div class="modal-content" style="width: 800px">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h2 class="modal-title">Удаление устройства</h2>
+                            <div class="container">
+                                <h3>Вы уверены что хотите удалить устройство?</h3>
+
+                            </div>
+                        </div>
+                        <div class="modal-body">
+                            <button type="button" class="btn btn-warning">Отмена</button>
+                            <button type="button" class="btn btn-danger">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 <div class="col-lg-4" style="width: 100%">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -361,15 +458,17 @@
                         <div class="panel-body">
                             <div class="table-responsive">
                                 <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Создать устройство</button>
-                                <table class="table table-bordered table-hover" id="tableAddRow">
+                                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#modalManageWindow">Тестовая кнопка</button>
+
+                                <table class="table table-bordered table-hover table-striped" id="tableAddRow">
                                     <thead>
                                     <tr>
-                                        <th>Код</th>
-                                        <th>Название устройства</th>
+                                        <th>Организация</th>
+                                        <th>Код устройства</th>
                                         <th>Тип устройства</th>
-                                        <th>Сохранить</th>
+                                        <th>Управление</th>
                                         <th>Регистрация</th>
-                                        <th style="width:10px"><span class="glyphicon glyphicon-plus addBtn" id="addBtn_0"></span></th>
+
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -377,14 +476,68 @@
                                         <td><input type="text" id="deviceid" class="form-control"/></td>
                                         <td><input type="text" id="name" class="form-control" /></td>
                                         <td><input type="text" id="type" class="form-control" /></td>
-                                        <td><input type="button" id="save" class="form-control" value="Сохранить"/></td>
-                                        <td><input type="button" id="registration" class="form-control" value="Зарегистрировать"/></td>
-                                        <td><span class="glyphicon glyhicon-minus addBtnRemove" id="addBtnRemove_0"></span></td>
+                                        <td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage" class="form-control" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>
+                                        <td><input type="button" onClick="deleteDevice(this.parentNode.parentNode.id);" id="delete" class="form-control" value="Удалить" data-toggle="modal" data-target="#modalDeviceDelete"/></td>
                                     </tr>
                                     </tbody>
                                 </table>
+
                                 <script type="application/javascript">
+                                    function manageDevice(rowId) {
+                                        var org =document.getElementById(rowId).childNodes[0].childNodes[0].value;
+                                        var device =document.getElementById(rowId).childNodes[1].childNodes[0].value;
+                                        var devicetype =document.getElementById(rowId).childNodes[2].childNodes[0].value;
+                                        document.getElementById("divOrgId").innerHTML = org;
+                                        document.getElementById("divDevice").innerHTML = device;
+                                        document.getElementById("divType").innerHTML = devicetype;
+
+                                        console.log(org +':' + device +':' + devicetype);
+
+                                    }
+                                    function deleteDevice(parentid) {
+                                        console.log('this.parentnode.id: ' + parentid);
+                                    }
+
+                                    $(document).ready(function(){
+                                        getAllDevices();
+                                    });
+                                    function getAllDevices() {
+                                        console.log('Идет получение списка устройств');
+                                        var orgid = 'C2M';
+
+                                        var tableHeaderRowCount = 1;
+                                        var table = document.getElementById('tableAddRow');
+                                        var rowCount = table.rows.length;
+                                        for (var i = tableHeaderRowCount; i < rowCount; i++) {
+                                            table.deleteRow(tableHeaderRowCount);
+                                        }
+
+
+                                        $.get("/getOrgDevices", {orgid : orgid},function(data) {
+                                            console.log(data);
+                                            document.getElementById("devqty").innerHTML = data.length;
+                                            var index;
+                                            for (index = 0; index < data.length; ++index) {
+                                                console.log(data[index].devid + ':' + data[index].devtype + ':' + data[index].orgid);
+                                                var tempTr = $('<tr id="row'+ index +'">' +
+                                                    '<td>' +
+                                                    '<input type="text" value="'+ data[index].devid +'" id="deviceid_' + index + '" class="form-control" style="font-size: larger" disabled/></td>' +
+                                                    '<td><input type="text" value="'+ data[index].orgid+'" id="name_' + index + '" class="form-control input-type" style="font-size: larger" disabled/></td>' +
+                                                    '<td><input type="text" value="'+ data[index].devtype +'" id="type_' + index + '" class="form-control input-type" style="font-size: larger" disabled/></td>' +
+                                                    '<td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage_' + index + '" class="form-control btn-manage" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>' +
+                                                    '<td><input type="button" onClick="deleteDevice(this.parentNode.parentNode.id);" id="delete_' + index + '" class="form-control" value="Удалить" data-toggle="modal" data-target="#modalDeviceDelete"/></td>' +
+                                                    '</tr>');
+
+                                                $("#tableAddRow").append(tempTr);
+
+
+                                            }
+
+
+                                        });
+                                    }
                                     $(document).ready(function () {
+
                                         $('.addBtn').on('click', function () {
                                             //var trID;
                                             //trID = $(this).closest('tr'); // table row ID
@@ -400,12 +553,11 @@
                                         });
 
 
+
                                         var i = 1;
                                         var deviceRecId = 0;
-                                        function addTableRow()
+                                        function addTableRow(deviceid, orgid)
                                         {
-                                            var orgId = 'mycomp';
-                                            var deviceid = orgId + i;
                                             var tempTr = $('<tr>' +
                                                 '<td>' +
                                                 '<input type="text" value="'+ deviceid +'" id="deviceid_' + i + '" class="form-control input-type"/></td>' +
@@ -440,14 +592,6 @@
                                                /* $.get("/savedevice", function(data) {
                                                     alert("Data: " + data + "\nStatus: " + status);
                                                 });*/
-                                                $.post("/savedevice",
-                                                    {
-                                                        name: "Donald Duck",
-                                                        city: "Duckburg"
-                                                    },
-                                                    function(data, status){
-                                                        alert("Data: " + data + "\nStatus: " + status);
-                                                    });
                                             });
                                             $('.input-type').keydown(function(){
                                                 document.getElementById(this.id).setAttribute('value', $(this).val());
@@ -482,10 +626,6 @@
 <!-- Bootstrap Core JavaScript -->
 <script src="js/bootstrap.min.js"></script>
 
-<!-- Morris Charts JavaScript -->
-<script src="js/plugins/morris/raphael.min.js"></script>
-<script src="js/plugins/morris/morris.min.js"></script>
-<script src="js/plugins/morris/morris-data.js"></script>
 
 </body>
 

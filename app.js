@@ -42,28 +42,33 @@ app.get('/', function (req, res) {
     res.sendFile(fileName, options);
 });
 app.get("/savedevice", function(req, res) {
+    gatewayClient.publishDeviceEvent(req.query.devtype, req.query.devid, "status","json",'{"d" : { "cpu" : 60, "mem" : 50 }}');
+    saveDeviceToMySql(req.query.orgid, req.query.devid, req.query.devtype);
+    res.redirect("devices.html")
+});
+app.get("/getOrgDevices", function(req, res) {
     var orgid = req.query.orgid;
-    var devid = req.query.devid;
-    var devtype = req.query.devtype;
-    gatewayClient.publishDeviceEvent(devtype,devid, "status","json",'{"d" : { "cpu" : 60, "mem" : 50 }}');
-    saveDeviceToMySql(orgid, devid, devtype);
+    var sql = 'SELECT * FROM devices where orgid = ?';
 
-    var fileName = "devices.html";
-    res.sendFile(fileName, options);
+    db.query(sql, [req.query.orgid], function (err, result) {
+        if(err) throw err;
+        res.send(result);
+    });
 });
 
+
 //Код для запуска в локальном режиме
-/*var hostPort = 4444;
+var hostPort = 4444;
 app.listen(hostPort, function () {
     console.log('Example app listening on port: ' + hostPort);
-});*/
+});
 
 
 //Код для публикации на Bluemix-сервере
-var appEnv = cfenv.getAppEnv();
+/*var appEnv = cfenv.getAppEnv();
  app.listen(appEnv.port, '0.0.0.0', function () {
  console.log('Example app listening on port 3000!');
- });
+ });*/
 
 //---CRUD operation for mysql db----
 function createTable() {
@@ -86,5 +91,14 @@ function saveDeviceToMySql(orgid, devid, devtype) {
         if(err) throw err;
         console.log('Last insert ID:', result.insertId);
     });
+}
+function getOrgDevices() {
+    var sql = 'SELECT * FROM devices';
+    var data = [];
+    db.query(sql, function (err, result) {
+        if(err) throw err;
+        data=result;
+    });
+    return data;
 }
 
