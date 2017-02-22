@@ -46,6 +46,16 @@ app.get("/savedevice", function(req, res) {
     saveDeviceToMySql(req.query.orgid, req.query.devid, req.query.devtype);
     res.redirect("devices.html")
 });
+app.get("/deletedevice", function(req, res) {
+    var deviceid = req.query.devid;
+    var sql = 'DELETE FROM devices where devid = ?';
+
+    db.query(sql, [deviceid], function (err, result) {
+        if(err) throw err;
+        res.send(result);
+    });
+    console.log('Device deleted: ' + deviceid);
+});
 app.get("/getOrgDevices", function(req, res) {
     var orgid = req.query.orgid;
     var sql = 'SELECT * FROM devices where orgid = ?';
@@ -55,6 +65,7 @@ app.get("/getOrgDevices", function(req, res) {
         res.send(result);
     });
 });
+
 
 
 //Код для запуска в локальном режиме
