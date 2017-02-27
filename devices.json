@@ -1,0 +1,8 @@
+{
+  "devices" : [
+    {
+      "typeId": "orgType",
+      "deviceId": "MyCooler02"
+    }
+  ]
+}

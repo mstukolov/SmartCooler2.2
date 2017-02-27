@@ -8,7 +8,7 @@ function deleteDevice() {
     console.log('Удаление устройства: ' + res[1]);
     console.log('Удаление устройства: ' + res[2]);
 
-    $.get("/deletedevice?devid=" + res[2], function(data) {
+    $.get("/deletedevice?devid=" + res[2] + "&devtype=" + res[1], function(data) {
 
     });
     getAllDevices();
@@ -16,6 +16,48 @@ function deleteDevice() {
     $('.modal-backdrop').hide();
 }
 
+//Функция которая заполняет заголовк выпадающей формы управления устройством
+function manageDevice(rowId) {
+    var org =document.getElementById(rowId).childNodes[0].childNodes[0].innerHTML;
+    var device =document.getElementById(rowId).childNodes[1].childNodes[0].value;
+    var devicetype =document.getElementById(rowId).childNodes[2].childNodes[0].value;
+    document.getElementById("divOrgDevId").innerHTML = org +':' + devicetype + ':' + device;
+    console.log(rowId + ':' + org +':' + device +':' + devicetype);
+}
+
+//Запрос к базе данных списка устройств созданных для организации
+// и заполнение таблицы id="tableAddRow" на странице devices.html
+function getAllDevices() {
+    var orgid = 'C2M';
+    var tableHeaderRowCount = 1;
+    var table = document.getElementById('tableAddRow');
+    var rowCount = table.rows.length;
+    for (var i = tableHeaderRowCount; i < rowCount; i++) {
+        table.deleteRow(tableHeaderRowCount);
+    }
+
+
+    $.get("/getOrgDevices", {orgid : orgid},function(data) {
+        document.getElementById("devqty").innerHTML = data.length;
+        var index;
+        for (index = 0; index < data.length; ++index) {
+            //console.log(data[index].devid + ':' + data[index].devtype + ':' + data[index].orgid);
+            var tempTr = $('<tr id="row'+ index +'">' +
+                '<td>' +
+                '<output id="orgid_' + index + '" style="font-size: larger">'+ data[index].orgid +'</output></td>' +
+                '<td><output type="text" id="devid_' + index + '" style="font-size: larger">'+ data[index].devid +'</output></td>' +
+                '<td><output type="text" id="type_' + index + '" style="font-size: larger">'+ data[index].devtype +'</output></td>' +
+                '<td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage_' + index + '" class="form-control btn-manage" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>' +
+                '</tr>');
+
+            $("#tableAddRow").append(tempTr);
+
+
+        }
+
+
+    });
+}
 
 function initDeviceConnectionHistory() {
     new Morris.Line({

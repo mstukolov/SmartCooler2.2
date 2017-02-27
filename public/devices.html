@@ -51,7 +51,7 @@
 
 </head>
 
-<body>
+<body onload="initpage() ;">
 
 <div id="wrapper">
 
@@ -171,11 +171,11 @@
         <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav side-nav">
-                <li class="active">
+                <li>
                     <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
                 </li>
-                <li>
-                    <a href="devices.html"><i class="fa fa-fw fa-camera-retro"></i>Мои устройства</a>
+                <li class="active">
+                    <a href="devices.html"><i class="fa fa-fw fa-camera-retro"></i> Мои устройства</a>
                 </li>
                 <li>
                     <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
@@ -469,26 +469,23 @@
 
                             <div class="table-responsive">
                                 <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Создать устройство</button>
-                                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#modalManageWindow">Тестовая кнопка</button>
+                                <button type="button" class="btn btn-info btn-lg" onclick="paintRows()" >Тестовая кнопка</button>
 
                                 <table class="table table-bordered table-hover table-striped" id="tableAddRow">
                                     <thead>
-                                    <tr>
+                                    <tr id="row00" class="bg-info">
                                         <th>Организация</th>
                                         <th>Код устройства</th>
                                         <th>Тип устройства</th>
                                         <th>Управление</th>
-                                        <th>Регистрация</th>
-
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr id="tr_0">
-                                        <td><input type="text" id="deviceid" class="form-control"/></td>
-                                        <td><input type="text" id="name" class="form-control" /></td>
-                                        <td><input type="text" id="type" class="form-control" /></td>
+                                        <td><output type="text" id="deviceid" class="form-control"/></td>
+                                        <td><output type="text" id="name" class="form-control" /></td>
+                                        <td><output type="text" id="type" class="form-control" /></td>
                                         <td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage" class="form-control" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>
-                                        <td><input type="button" onClick="deleteDevice(this.parentNode.parentNode.id);" id="delete" class="form-control" value="Удалить" data-toggle="modal" data-target="#modalDeviceDelete"/></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -499,118 +496,28 @@
                                     document.onload = renderPlot();
                                     document.onload = buildLineChart();
                                     document.onload = initDeviceConnectionHistory();
-
-
-                                    function manageDevice(rowId) {
-                                        var org =document.getElementById(rowId).childNodes[0].childNodes[0].value;
-                                        var device =document.getElementById(rowId).childNodes[1].childNodes[0].value;
-                                        var devicetype =document.getElementById(rowId).childNodes[2].childNodes[0].value;
-                                        document.getElementById("divOrgDevId").innerHTML = org +':' + devicetype + ':' + device;
-
-                                        console.log(org +':' + device +':' + devicetype);
-
+                                    function initpage() {
+                                        console.log('page is started');
+                                        //$('#row1').addClass('bg-danger');
+                                        //document.getElementById("row01").className  = "bg-danger";
                                     }
-
+                                    function paintRows() {
+                                        $('#row1').addClass('bg-danger');
+                                    }
 
                                     $(document).ready(function(){
                                         getAllDevices();
+                                        console.log('ready function');
+                                        setTimeout(function () {
+                                            $('#row1').addClass('bg-danger');
+                                        }, 1000);
+                                        //$('#row2').addClass('bg-danger');
+                                        //document.getElementById("row0").className  = "bg-success";
+                                     ;
                                     });
-                                    function getAllDevices() {
-                                        console.log('Идет получение списка устройств');
-                                        var orgid = 'C2M';
-
-                                        var tableHeaderRowCount = 1;
-                                        var table = document.getElementById('tableAddRow');
-                                        var rowCount = table.rows.length;
-                                        for (var i = tableHeaderRowCount; i < rowCount; i++) {
-                                            table.deleteRow(tableHeaderRowCount);
-                                        }
-
-
-                                        $.get("/getOrgDevices", {orgid : orgid},function(data) {
-                                            console.log(data);
-                                            document.getElementById("devqty").innerHTML = data.length;
-                                            var index;
-                                            for (index = 0; index < data.length; ++index) {
-                                                console.log(data[index].devid + ':' + data[index].devtype + ':' + data[index].orgid);
-                                                var tempTr = $('<tr id="row'+ index +'">' +
-                                                    '<td>' +
-                                                    '<input type="text" value="'+ data[index].orgid +'" id="deviceid_' + index + '" class="form-control" style="font-size: larger" disabled/></td>' +
-                                                    '<td><input type="text" value="'+ data[index].devid+'" id="name_' + index + '" class="form-control input-type" style="font-size: larger" disabled/></td>' +
-                                                    '<td><input type="text" value="'+ data[index].devtype +'" id="type_' + index + '" class="form-control input-type" style="font-size: larger" disabled/></td>' +
-                                                    '<td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage_' + index + '" class="form-control btn-manage" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>' +
-                                                    '<td><input type="button" onClick="deleteDevice(this.parentNode.parentNode.id);" id="delete_' + index + '" class="form-control" value="Удалить" data-toggle="modal" data-target="#modalDeviceDelete"/></td>' +
-                                                    '</tr>');
-
-                                                $("#tableAddRow").append(tempTr);
-
-
-                                            }
-
-
-                                        });
-                                    }
-                                    $(document).ready(function () {
-
-                                        $('.addBtn').on('click', function () {
-                                            //var trID;
-                                            //trID = $(this).closest('tr'); // table row ID
-                                            addTableRow();
-                                        });
-                                        $('.addBtnRemove').click(function () {
-                                            $(this).closest('tr').remove();
-                                            console.log('row deleted');
-                                        });
-                                        $('.form-control').click(function(){
-                                            var clickedID = this.id;
-                                            console.log('Button is clicked:' + clickedID);
-                                        });
 
 
 
-                                        var i = 1;
-                                        var deviceRecId = 0;
-                                        function addTableRow(deviceid, orgid)
-                                        {
-                                            var tempTr = $('<tr>' +
-                                                '<td>' +
-                                                '<input type="text" value="'+ deviceid +'" id="deviceid_' + i + '" class="form-control input-type"/></td>' +
-                                                '<td><input type="text" id="name_' + i + '" class="form-control input-type" /></td>' +
-                                                '<td><input type="text" id="type_' + i + '" class="form-control input-type" /></td>' +
-                                                '<td><input type="button" id="save_' + i + '" class="form-control btn-save" value="Сохранить"/></td>' +
-                                                '<td><input type="button" id="reg_' + i + '" class="form-control" value="Зарегистрировать"/></td>' +
-                                                '<td><span class="glyphicon glyphicon-minus addBtnRemove" id="addBtn_' + i + '"></span></td>' +
-                                                '</tr>').on('click', function () {
-
-                                                /*$(this).closest('tr').remove();
-                                                $(document.body).on('click', '.TreatmentHistoryRemove', function (e) {
-                                                    $(this).closest('tr').remove();
-                                                });*/
-                                            });
-                                            $("#tableAddRow").append(tempTr);
-                                            document.getElementById('deviceid_' + i).value = deviceid;
-                                            $('.btn-save').click(function(){
-                                                var clickedID = this.id;
-                                                document.getElementById(this.id).value = 'Success';
-                                                document.getElementById(this.id).style.background='#33FF33';
-
-                                                var rowID = this.id;
-                                                var position = rowID.substring(rowID.indexOf("_") + 1);
-                                                var devID = document.getElementById('deviceid_' + position).getAttribute('value');
-                                                var devName = document.getElementById('name_' + position).getAttribute('value');
-                                                var devType = document.getElementById('type_' + position).getAttribute('value');
-
-                                                console.log(devID + ':' + devName + ':' + devType);
-
-
-                                            });
-                                            $('.input-type').keydown(function(){
-                                                document.getElementById(this.id).setAttribute('value', $(this).val());
-                                            });
-                                            i++;
-                                            deviceRecId++;
-                                        }
-                                    });
                                 </script>
                             </div>
                             <div class="text-right">

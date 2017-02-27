@@ -1,5 +1,6 @@
 var cfenv = require("cfenv");
 require('dotenv').load();
+var config = require('./config.json');
 
 //Инициализация веб-сервера и основных настроек
 var express = require("express");
@@ -14,8 +15,9 @@ var options = {
     }
 };
 //Инициализация IOT-сервиса
-var Client = require("ibmiotf");
-var config = {
+var iotf = require("ibmiotf");
+
+var configType = {
     "org" : "kwxqcy",
     "type" : "gwtype",
     "id" : "Gateway01",
@@ -23,7 +25,8 @@ var config = {
     "auth-method" : "token",
     "auth-token" : "qwerty123"
 };
-var gatewayClient = new Client.IotfGateway(config);
+var appClient = new iotf.IotfApplication(config);
+var gatewayClient = new iotf.IotfGateway(configType);
 gatewayClient.log.setLevel('debug');
 gatewayClient.connect();
 //----Инициализация подключения к MySQL
@@ -42,14 +45,47 @@ app.get('/', function (req, res) {
     res.sendFile(fileName, options);
 });
 app.get("/savedevice", function(req, res) {
-    gatewayClient.publishDeviceEvent(req.query.devtype, req.query.devid, "status","json",'{"d" : { "cpu" : 60, "mem" : 50 }}');
+    //gatewayClient.publishDeviceEvent(req.query.devtype, req.query.devid, "status","json",'{"d" : { "cpu" : 60, "mem" : 50 }}');
+
+    var devices = {
+        "devices" : [
+            {
+                "typeId": req.query.devtype,
+                "deviceId": req.query.devid
+            }
+        ]
+    };
+    var devices2 =
+    // Register Multiple devices
+    appClient.registerMultipleDevices(devices.devices). then (
+        function onSuccess (response) {
+            //Success callback
+            console.log("Success");
+            console.log(response);
+        },
+        function onError (argument) {
+            //Failure callback
+            console.log("Fail");
+            console.log(argument);
+        });
     saveDeviceToMySql(req.query.orgid, req.query.devid, req.query.devtype);
     res.redirect("devices.html")
 });
 app.get("/deletedevice", function(req, res) {
     var deviceid = req.query.devid;
+    var devicetype = req.query.devtype;
     var sql = 'DELETE FROM devices where devid = ?';
 
+    appClient.
+    unregisterDevice(devicetype, deviceid). then (function onSuccess (response) {
+        //Success callback
+        console.log("Success");
+        console.log(response);
+    }, function onError (argument) {
+        //Failure callback
+        console.log("Fail");
+        console.log(argument);
+    });
     db.query(sql, [deviceid], function (err, result) {
         if(err) throw err;
         res.send(result);
