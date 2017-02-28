@@ -65,7 +65,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html">Управление IOT-устройствами</a>
+            <a class="navbar-brand" href="index.html">Administration panel</a>
         </div>
         <!-- Top Menu Items -->
         <ul class="nav navbar-right top-nav">
@@ -175,24 +175,39 @@
                     <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
                 </li>
                 <li class="active">
-                    <a href="devices.html"><i class="fa fa-fw fa-camera-retro"></i> Мои устройства</a>
+                    <a href="devices.html"><i class="fa fa-fw fa-camera-retro"></i>Мои устройства</a>
                 </li>
                 <li>
+                    <a href="devtypes.html"><i class="fa fa-fw fa-table"></i> Типы и атрибуты</a>
+                </li>
+                <li>
+                    <a href="templates.html"><i class="fa fa-fw fa-file"></i> Шаблоны устройств</a>
+                </li>
+                <li>
+                    <a href="firmware.html"><i class="fa fa-fw fa-inbox"></i> Управление прошивками</a>
+                </li>
+                <li>
+                    <a href="administration.html"><i class="fa fa-fw fa-wrench"></i> Администрирование</a>
+                </li>
+                <li>
+                    <a href="diagnostic.html"><i class="fa fa-fw fa-desktop"></i> Диагностика</a>
+                </li>
+                <li class="hidden">
                     <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
                 </li>
-                <li>
+                <li class="hidden">
                     <a href="tables.html"><i class="fa fa-fw fa-table"></i> Tables</a>
                 </li>
-                <li>
+                <li class="hidden">
                     <a href="forms.html"><i class="fa fa-fw fa-edit"></i> Forms</a>
                 </li>
-                <li>
+                <li class="hidden">
                     <a href="bootstrap-elements.html"><i class="fa fa-fw fa-desktop"></i> Bootstrap Elements</a>
                 </li>
-                <li>
+                <li class="hidden">
                     <a href="bootstrap-grid.html"><i class="fa fa-fw fa-wrench"></i> Bootstrap Grid</a>
                 </li>
-                <li>
+                <li class="hidden">
                     <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown <i class="fa fa-fw fa-caret-down"></i></a>
                     <ul id="demo" class="collapse">
                         <li>
@@ -203,10 +218,10 @@
                         </li>
                     </ul>
                 </li>
-                <li>
+                <li class="hidden">
                     <a href="blank-page.html"><i class="fa fa-fw fa-file"></i> Blank Page</a>
                 </li>
-                <li>
+                <li class="hidden">
                     <a href="index-rtl.html"><i class="fa fa-fw fa-dashboard"></i> RTL Dashboard</a>
                 </li>
             </ul>
@@ -422,8 +437,8 @@
                                 <div class="panel-body">
                                     <button type="button" class="btn btn-primary btn-block"
                                             style="height: 200px;"
-                                            onClick="downloadCloudantData();">
-                                        <h4>Загрузить<br> данные</h4>
+                                            onClick="DeviceTestConnection();">
+                                        <h4>Проверить<br> соединение</h4>
                                     </button>
                                 </div>
                             </div>
@@ -469,11 +484,12 @@
 
                             <div class="table-responsive">
                                 <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Создать устройство</button>
-                                <button type="button" class="btn btn-info btn-lg" onclick="paintRows()" >Тестовая кнопка</button>
+                                <button type="button" class="btn btn-info btn-lg" onclick="testButton()" >Тестовая кнопка</button>
 
                                 <table class="table table-bordered table-hover table-striped" id="tableAddRow">
                                     <thead>
                                     <tr id="row00" class="bg-info">
+                                        <th>Состояние</th>
                                         <th>Организация</th>
                                         <th>Код устройства</th>
                                         <th>Тип устройства</th>
@@ -482,6 +498,7 @@
                                     </thead>
                                     <tbody>
                                     <tr id="tr_0">
+                                        <td><output type="text" id="status" class="form-control"/></td>
                                         <td><output type="text" id="deviceid" class="form-control"/></td>
                                         <td><output type="text" id="name" class="form-control" /></td>
                                         <td><output type="text" id="type" class="form-control" /></td>
@@ -501,8 +518,10 @@
                                         //$('#row1').addClass('bg-danger');
                                         //document.getElementById("row01").className  = "bg-danger";
                                     }
-                                    function paintRows() {
-                                        $('#row1').addClass('bg-danger');
+                                    function testButton() {
+                                        console.log('change ico')
+                                        console.log(document.getElementById("status-ico-1"))
+                                        document.getElementById('status-ico-1').className = 'glyphicon glyphicon-remove';
                                     }
 
                                     $(document).ready(function(){
@@ -515,9 +534,6 @@
                                         //document.getElementById("row0").className  = "bg-success";
                                      ;
                                     });
-
-
-
                                 </script>
                             </div>
                             <div class="text-right">

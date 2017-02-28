@@ -17,18 +17,20 @@ var options = {
 //Инициализация IOT-сервиса
 var iotf = require("ibmiotf");
 
-var configType = {
+/*var configType = {
     "org" : "kwxqcy",
     "type" : "gwtype",
     "id" : "Gateway01",
     "domain": "internetofthings.ibmcloud.com",
     "auth-method" : "token",
     "auth-token" : "qwerty123"
-};
+};*/
 var appClient = new iotf.IotfApplication(config);
+/*
 var gatewayClient = new iotf.IotfGateway(configType);
 gatewayClient.log.setLevel('debug');
 gatewayClient.connect();
+*/
 //----Инициализация подключения к MySQL
 var mysql = require('mysql');
 var db = mysql.createConnection({
@@ -44,6 +46,16 @@ app.get('/', function (req, res) {
     var fileName = "index.html";
     res.sendFile(fileName, options);
 });
+app.get('/testdeviceconnection', function (req, res) {
+    console.log('testdeviceconnection: ' + req.query.devtype + ':' + req.query.devid);
+    appClient.connect();
+    appClient.on('connect', function () {
+        console.log('Success device connection');
+        res.send('Success device connection from Node.js');
+    });
+});
+
+
 app.get("/savedevice", function(req, res) {
     //gatewayClient.publishDeviceEvent(req.query.devtype, req.query.devid, "status","json",'{"d" : { "cpu" : 60, "mem" : 50 }}');
 

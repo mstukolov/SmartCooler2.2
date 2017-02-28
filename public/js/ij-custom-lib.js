@@ -1,6 +1,17 @@
 /**
  * Created by Maxim on 22.02.2017.
  */
+
+//Проверка соединения с устройством
+function DeviceTestConnection() {
+    var res = document.getElementById("divOrgDevId").innerHTML.split(":");
+    console.log('Тестирование устройства: ' + res[2]);
+    $.get("/testdeviceconnection?devid=" + res[2] + "&devtype=" + res[1], function(data) {
+        //console.log(data);
+        alert(data);
+    });
+}
+//Удаление информации об устройстве.
 function deleteDevice() {
     var res = document.getElementById("divOrgDevId").innerHTML.split(":");
 
@@ -39,12 +50,21 @@ function getAllDevices() {
 
     $.get("/getOrgDevices", {orgid : orgid},function(data) {
         document.getElementById("devqty").innerHTML = data.length;
+        var statusOn = 'glyphicon glyphicon-signal';
+        var statusOff = 'glyphicon glyphicon-remove';
+        var statusico='';
+
         var index;
         for (index = 0; index < data.length; ++index) {
+            if(index%2 != 0){
+                statusico = statusOn
+            } else {statusico = statusOff}
+
             //console.log(data[index].devid + ':' + data[index].devtype + ':' + data[index].orgid);
             var tempTr = $('<tr id="row'+ index +'">' +
                 '<td>' +
-                '<output id="orgid_' + index + '" style="font-size: larger">'+ data[index].orgid +'</output></td>' +
+                '<output id="status_' + index + '" style="font-size: larger">'+ '<span id="status-ico-'+ index +'" class="'+ statusico +'"></span>' +'</output></td>' +
+                '<td><output id="orgid_' + index + '" style="font-size: larger">'+ data[index].orgid +'</output></td>' +
                 '<td><output type="text" id="devid_' + index + '" style="font-size: larger">'+ data[index].devid +'</output></td>' +
                 '<td><output type="text" id="type_' + index + '" style="font-size: larger">'+ data[index].devtype +'</output></td>' +
                 '<td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage_' + index + '" class="form-control btn-manage" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>' +
