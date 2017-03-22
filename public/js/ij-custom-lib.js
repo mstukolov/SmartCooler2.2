@@ -27,7 +27,7 @@ function deleteDevice() {
     $('.modal-backdrop').hide();
 }
 
-//Функция которая заполняет заголовк выпадающей формы управления устройством
+//Функция которая заполняет заголовок выпадающей формы управления устройством
 function manageDevice(rowId) {
     var org =document.getElementById(rowId).childNodes[0].childNodes[0].innerHTML;
     var device =document.getElementById(rowId).childNodes[1].childNodes[0].value;

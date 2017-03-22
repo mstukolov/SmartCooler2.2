@@ -253,12 +253,143 @@
             <!-- /.row -->
 
             Диагностика
+
+            <div id="summary-line-chart"></div>
+            <div id="bar-current-value"></div>
+            <div id="pie-chart" ></div>
+            <script type="text/javascript">
+                function getLastDataInAjax() {
+                    var query = {
+                        'type': 'BMP180',
+                        'devices': devices
+                    }
+                    var totalWater;
+                    var summaryData = [];
+                    var request = $.ajax({
+                        url: "/getlastdata",
+                        data:query,
+                        type: 'GET',
+                        success:function (data) {
+                            data.forEach(function(item, i, data) {
+                                console.log('New data =' + JSON.stringify(data))
+                            });
+                            //update bar chart
+                            barChart.setData(data)
+
+                            //update donate graph
+                            summaryData = []
+                            totalWater = getRandomInt(0,1000);
+                            var tpoint1 = {};
+                            var tpoint2 = {};
+                            tpoint1['label'] = "Заполнено\n(литров)";
+                            tpoint1['value'] = totalWater;
+                            tpoint2['label'] = "Пусто\n(литров)";
+                            tpoint2['value'] = 1000 - totalWater;
+
+                            summaryData.push(tpoint1);
+                            summaryData.push(tpoint2);
+                            donut.setData(summaryData);
+                        }
+                    });
+
+                };
+                var sendRequest = setInterval(function () {
+                    console.log('Send query to server')
+                    getLastDataInAjax();
+                }, 3000);
+            </script>
             <script>
+                var donut = Morris.Donut({
+                    element: 'pie-chart',
+                    data: [
+                        {label: "Заполнено\n(литров)", value: 0},
+                        {label: "Пусто\n(литров)", value: 0}
+                    ],
+                    colors: [
+                        '#66ccff',
+                        '#e6ffe6',
+                        '#67C69D',
+                        '#95D7BB'
+                    ],
+                });
+                /*var updateDonut = setInterval(function () {
+                    summaryData = []
+                    totalWater = getRandomInt(0,1000);
+                    var tpoint1 = {};
+                    var tpoint2 = {};
+                    tpoint1['label'] = "Заполнено\n(литров)";
+                    tpoint1['value'] = totalWater;
+                    tpoint2['label'] = "Пусто\n(литров)";
+                    tpoint2['value'] = 1000 - totalWater;
+
+                    summaryData.push(tpoint1);
+                    summaryData.push(tpoint2);
+                    donut.setData(summaryData);
+
+                }, 3000);*/
+            </script>
+
+            <script>
+                var barData = []
+                function getRandomInt(min, max) {
+                    return Math.floor(Math.random() * (max - min + 1)) + min;
+                }
+
+
+                config = {
+                        data: barData,
+                        barGap:1,
+                        barSizeRatio:0.4,
+                        gridTextSize:'18px',
+                        barColors: ["#0099ff", "#e6ffff", "#1AB244", "#B29215"],
+                        barWidth: 10,
+                        xkey: 'y',
+                        ykeys: ['a', 'b'],
+                        labels: ['Total Income', 'Total Outcome'],
+                        fillOpacity: 0.8,
+                        hideHover: 'auto',
+                        behaveLikeLine: true,
+                        resize: true,
+                        pointFillColors:['#ffffff'],
+                        pointStrokeColors: ['black'],
+                        lineColors:['gray','red']
+                    };
+                config.element = 'bar-current-value';
+                config.stacked = true;
+                var barChart = Morris.Bar(config);
+            </script>
+            <script>
+                var data = [];
+                var devices = []
+                for (var i = 100; i < 105; i++) {
+                    devices.push("ESP8266_" + i)
+                }
+
+                var updateSummaryChart = setInterval(function () {
+
+                    devices.forEach(function(item, i, arr) {
+                        var point = {};
+                        var yColumn = 'y';
+                        var valueColumn = item;
+                        point[yColumn] = (new Date()).getTime();
+                        point[valueColumn] = Math.round(Math.random()*100);
+                        data.push(point)
+                    });
+                    chart.setData(data)
+                    }, 3000);
+
+                console.log(devices)
+                var chart = Morris.Line({
+                    element: 'summary-line-chart',
+                    data: data,
+                    xkey: 'y',
+                    ykeys: devices,
+                    labels: devices,
+                    dateFormat: function (x) { return new Date(x).toDateString(); }
+                });
 
             </script>
-            <script async defer
-                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqR0TygdY-XcyjIWl1_2-G4A7buyoXS0k&callback=initMap">
-            </script>
+
         </div>
         <!-- /.container-fluid -->
 
@@ -277,27 +408,17 @@
     var graphdata = [];
     var plot1
     var chart;
-    var year = 1995;
-    document.onload = renderPlot(graphdata);
+
     document.onload = buildLineChart();
 
     function buildLineChart() {
         var xValue = (new Date()).getTime();
         var yValue = Math.random()*100;
-        year++;
-        graphdata.push({ year2: xValue, value: yValue });
-        chart.setData(graphdata)
+
+
         setTimeout(buildLineChart, 1000);
     }
-    function renderPlot(data) {
-        chart = Morris.Line({
-            element: 'myfirstchart',
-            data: data,
-            xkey: 'year2',
-            ykeys: ['value'],
-            labels: ['Value']
-        });
-    }
+
 </script>
 
 

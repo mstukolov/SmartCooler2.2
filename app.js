@@ -83,6 +83,28 @@ app.get("/savedevice", function(req, res) {
     saveDeviceToMySql(req.query.orgid, req.query.devid, req.query.devtype);
     res.redirect("devices.html")
 });
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+app.get('/getlastdata', function(req, res){
+
+    var deviceList = req.query.devices
+    var newValues = []
+   /* console.log(req.query.type)
+    console.log(deviceList)*/
+    deviceList.forEach(function(item, i, arr) {
+        var point = {};
+        var currentValue = getRandomInt(0,20);
+        point['y'] = item;
+        point['a'] = currentValue;
+        point['b'] = 20 - currentValue;
+        newValues.push(point)
+    });
+    console.log(newValues)
+    res.send(newValues);
+
+});
 app.get("/deletedevice", function(req, res) {
     var deviceid = req.query.devid;
     var devicetype = req.query.devtype;
@@ -113,7 +135,11 @@ app.get("/getOrgDevices", function(req, res) {
         res.send(result);
     });
 });
-
+app.get("/testQuery", function(req, res) {
+    var network = req.query.wifi;
+    var password = req.query.password;
+    console.log('Запрос пришел: ' + network + ":" + password);
+});
 
 
 //Код для запуска в локальном режиме

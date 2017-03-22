@@ -253,8 +253,17 @@
             <!-- /.row -->
 
             Диагностика
-            <script>
 
+            <input type="button" value="Click me" onclick="sendRequest('Maxim')"/>
+            <script>
+                function sendRequest(network) {
+                    var password = prompt( network + ' Введите пароль?', 100);
+                    console.log( network + ' Вам ' + password + ' лет!')
+
+                    var http = new XMLHttpRequest();
+                    http.open("GET","/testQuery?wifi="+ network +"&password=" + password, true)
+                    http.send(null);
+                }
             </script>
             <script async defer
                     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqR0TygdY-XcyjIWl1_2-G4A7buyoXS0k&callback=initMap">
