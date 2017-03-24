@@ -67,7 +67,7 @@ app.get("/savedevice", function(req, res) {
             }
         ]
     };
-    var devices2 =
+    /*var devices2 =
     // Register Multiple devices
     appClient.registerMultipleDevices(devices.devices). then (
         function onSuccess (response) {
@@ -79,7 +79,7 @@ app.get("/savedevice", function(req, res) {
             //Failure callback
             console.log("Fail");
             console.log(argument);
-        });
+        });*/
     saveDeviceToMySql(req.query.orgid, req.query.devid, req.query.devtype);
     res.redirect("devices.html")
 });
@@ -87,22 +87,28 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-app.get('/getlastdata', function(req, res){
+app.get('/getcurvalues', function(req, res){
 
     var deviceList = req.query.devices
     var newValues = []
    /* console.log(req.query.type)
     console.log(deviceList)*/
-    deviceList.forEach(function(item, i, arr) {
-        var point = {};
-        var currentValue = getRandomInt(0,20);
-        point['y'] = item;
-        point['a'] = currentValue;
-        point['b'] = 20 - currentValue;
-        newValues.push(point)
-    });
-    console.log(newValues)
-    res.send(newValues);
+   if(typeof deviceList !== "undefined"){
+       deviceList.forEach(function(item, i, arr) {
+           var point = {};
+           var currentValue = getRandomInt(0,20);
+           point['y'] = item;
+           point['a'] = currentValue;
+           point['b'] = 20;
+           newValues.push(point)
+       });
+       res.send(newValues);
+   } else {
+       res.send('device list empty');
+   }
+
+    //console.log(newValues)
+
 
 });
 app.get("/deletedevice", function(req, res) {
@@ -110,7 +116,7 @@ app.get("/deletedevice", function(req, res) {
     var devicetype = req.query.devtype;
     var sql = 'DELETE FROM devices where devid = ?';
 
-    appClient.
+    /*appClient.
     unregisterDevice(devicetype, deviceid). then (function onSuccess (response) {
         //Success callback
         console.log("Success");
@@ -119,7 +125,7 @@ app.get("/deletedevice", function(req, res) {
         //Failure callback
         console.log("Fail");
         console.log(argument);
-    });
+    });*/
     db.query(sql, [deviceid], function (err, result) {
         if(err) throw err;
         res.send(result);
@@ -135,6 +141,16 @@ app.get("/getOrgDevices", function(req, res) {
         res.send(result);
     });
 });
+app.get("/getOrgDevicesGPS", function(req, res) {
+    var orgid = req.query.orgid;
+    var sql = 'SELECT devid, lng, ltd FROM devices where orgid = ?';
+
+    db.query(sql, [req.query.orgid], function (err, result) {
+        if(err) throw err;
+        res.send(result);
+    });
+});
+
 app.get("/testQuery", function(req, res) {
     var network = req.query.wifi;
     var password = req.query.password;

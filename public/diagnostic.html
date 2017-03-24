@@ -46,6 +46,8 @@
             width: 100%;
         }
     </style>
+    <script src="js/ij-data-lib.js"></script>
+    <script src="https://api-maps.yandex.ru/1.1/index.xml" type="text/javascript"></script>
 </head>
 
 <body>
@@ -251,54 +253,185 @@
                 </div>
             </div>
             <!-- /.row -->
+            <!-- Начало формирования страницы -->
+            <!-- /.row -->
 
-            Диагностика
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-comments fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">26</div>
+                                    <div>New Comments!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-tasks fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">12</div>
+                                    <div>New Tasks!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-yellow">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-shopping-cart fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">124</div>
+                                    <div>New Orders!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-support fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">13</div>
+                                    <div>Support Tickets!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-gears"></i> Выбор устройств</h3>
+                        </div>
+                        <div class="panel-body">
+                            <select multiple class="form-control"
+                                    id="deviceSelection" style="width: 100%;height:300px; font-size: 22px" class="selectpicker">
+                            </select>
+                            <button type="button" id="devListBtn" style="width: 100%"
+                                    onclick="redrawChartsByDeviceList()"
+                                    class="btn btn-primary btn-lg">Выбрать устройства</button>
+
+                            <div class="text-right">
+                                <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-pie-chart"></i> Суммарное количество</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="pie-chart"></div>
+                            <div class="text-right">
+                                <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-map-marker"></i> Местоположение</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="YMapsID" style="width:100%;height:350px"></div>
+                            <div class="text-right">
+                                <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div id="summary-line-chart"></div>
             <div id="bar-current-value"></div>
-            <div id="pie-chart" ></div>
-            <script type="text/javascript">
-                function getLastDataInAjax() {
-                    var query = {
-                        'type': 'BMP180',
-                        'devices': devices
-                    }
-                    var totalWater;
-                    var summaryData = [];
-                    var request = $.ajax({
-                        url: "/getlastdata",
-                        data:query,
-                        type: 'GET',
-                        success:function (data) {
-                            data.forEach(function(item, i, data) {
-                                console.log('New data =' + JSON.stringify(data))
-                            });
-                            //update bar chart
-                            barChart.setData(data)
 
-                            //update donate graph
-                            summaryData = []
-                            totalWater = getRandomInt(0,1000);
-                            var tpoint1 = {};
-                            var tpoint2 = {};
-                            tpoint1['label'] = "Заполнено\n(литров)";
-                            tpoint1['value'] = totalWater;
-                            tpoint2['label'] = "Пусто\n(литров)";
-                            tpoint2['value'] = 1000 - totalWater;
 
-                            summaryData.push(tpoint1);
-                            summaryData.push(tpoint2);
-                            donut.setData(summaryData);
-                        }
-                    });
 
-                };
-                var sendRequest = setInterval(function () {
-                    console.log('Send query to server')
-                    getLastDataInAjax();
-                }, 3000);
-            </script>
             <script>
+                var chart = Morris.Line({
+                    element: 'summary-line-chart',
+                    data: historyData,
+                    xkey: 'y',
+                    ykeys: devices,
+                    labels: selectedDevices,
+                    dateFormat: function (x) { return new Date(x).toDateString(); }
+                });
+
+                var barData = []
+                config = {
+                    data: barData,
+                    barGap:1,
+                    barSizeRatio:0.4,
+                    gridTextSize:'18px',
+                    barColors: ["#0099ff", "#e6ffff", "#1AB244", "#B29215"],
+                    barWidth: 10,
+                    xkey: 'y',
+                    ykeys: ['a', 'b'],
+                    labels: ['Full', 'Out'],
+                    fillOpacity: 0.8,
+                    hideHover: 'auto',
+                    behaveLikeLine: true,
+                    resize: true,
+                    pointFillColors:['#ffffff'],
+                    pointStrokeColors: ['black'],
+                    lineColors:['gray','red']
+                };
+                config.element = 'bar-current-value';
+                config.stacked = true;
+                var barChart = Morris.Bar(config);
                 var donut = Morris.Donut({
                     element: 'pie-chart',
                     data: [
@@ -312,82 +445,6 @@
                         '#95D7BB'
                     ],
                 });
-                /*var updateDonut = setInterval(function () {
-                    summaryData = []
-                    totalWater = getRandomInt(0,1000);
-                    var tpoint1 = {};
-                    var tpoint2 = {};
-                    tpoint1['label'] = "Заполнено\n(литров)";
-                    tpoint1['value'] = totalWater;
-                    tpoint2['label'] = "Пусто\n(литров)";
-                    tpoint2['value'] = 1000 - totalWater;
-
-                    summaryData.push(tpoint1);
-                    summaryData.push(tpoint2);
-                    donut.setData(summaryData);
-
-                }, 3000);*/
-            </script>
-
-            <script>
-                var barData = []
-                function getRandomInt(min, max) {
-                    return Math.floor(Math.random() * (max - min + 1)) + min;
-                }
-
-
-                config = {
-                        data: barData,
-                        barGap:1,
-                        barSizeRatio:0.4,
-                        gridTextSize:'18px',
-                        barColors: ["#0099ff", "#e6ffff", "#1AB244", "#B29215"],
-                        barWidth: 10,
-                        xkey: 'y',
-                        ykeys: ['a', 'b'],
-                        labels: ['Total Income', 'Total Outcome'],
-                        fillOpacity: 0.8,
-                        hideHover: 'auto',
-                        behaveLikeLine: true,
-                        resize: true,
-                        pointFillColors:['#ffffff'],
-                        pointStrokeColors: ['black'],
-                        lineColors:['gray','red']
-                    };
-                config.element = 'bar-current-value';
-                config.stacked = true;
-                var barChart = Morris.Bar(config);
-            </script>
-            <script>
-                var data = [];
-                var devices = []
-                for (var i = 100; i < 105; i++) {
-                    devices.push("ESP8266_" + i)
-                }
-
-                var updateSummaryChart = setInterval(function () {
-
-                    devices.forEach(function(item, i, arr) {
-                        var point = {};
-                        var yColumn = 'y';
-                        var valueColumn = item;
-                        point[yColumn] = (new Date()).getTime();
-                        point[valueColumn] = Math.round(Math.random()*100);
-                        data.push(point)
-                    });
-                    chart.setData(data)
-                    }, 3000);
-
-                console.log(devices)
-                var chart = Morris.Line({
-                    element: 'summary-line-chart',
-                    data: data,
-                    xkey: 'y',
-                    ykeys: devices,
-                    labels: devices,
-                    dateFormat: function (x) { return new Date(x).toDateString(); }
-                });
-
             </script>
 
         </div>
@@ -404,23 +461,6 @@
 
 <!-- Bootstrap Core JavaScript -->
 <script src="js/bootstrap.min.js"></script>
-<script type="application/javascript">
-    var graphdata = [];
-    var plot1
-    var chart;
-
-    document.onload = buildLineChart();
-
-    function buildLineChart() {
-        var xValue = (new Date()).getTime();
-        var yValue = Math.random()*100;
-
-
-        setTimeout(buildLineChart, 1000);
-    }
-
-</script>
-
 
 <!-- jQuery -->
 <script src="js/jquery.js"></script>
