@@ -28,24 +28,9 @@
     <![endif]-->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.dateAxisRenderer.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/jqplot/1.0.8/jquery.jqplot.min.css" />
-    <!--Integrating Pie Chart-->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.pieRenderer.min.js"></script>
-    <!--Jqplot Zooming-->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.cursor.min.js"></script>
 
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
-    <style>
-        #map {
-            height: 400px;
-            width: 100%;
-        }
-    </style>
+    <script src="js/ij-fleet-mng.js"></script>
+    <script src="https://api-maps.yandex.ru/1.1/index.xml" type="text/javascript"></script>
 </head>
 
 <body>
@@ -251,15 +236,14 @@
                 </div>
             </div>
             <!-- /.row -->
-
-            Учет особенностей конкретной единицы оборудования – Возможность моделирования сигналов любых типов оборудования и устройств без программирования – Конфигурирование новых шаблонов на основе имеющихся устройств – Управление версиями и итерациями. История версий – Готовые шаблоны оборудования, импорт\экспорт шаблонов
-
+            <button type="button" class="btn" style="width: 300px"
+                onclick="finishLineCreate()"
+            >Завершить построение линии</button>
+            <div id="YMapsID" style="width:100%;height:800px"></div>
             <script>
 
             </script>
-            <script async defer
-                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqR0TygdY-XcyjIWl1_2-G4A7buyoXS0k&callback=initMap">
-            </script>
+
         </div>
         <!-- /.container-fluid -->
 
@@ -274,33 +258,6 @@
 
 <!-- Bootstrap Core JavaScript -->
 <script src="js/bootstrap.min.js"></script>
-<script type="application/javascript">
-    var graphdata = [];
-    var plot1
-    var chart;
-    var year = 1995;
-    document.onload = renderPlot(graphdata);
-    document.onload = buildLineChart();
-
-    function buildLineChart() {
-        var xValue = (new Date()).getTime();
-        var yValue = Math.random()*100;
-        year++;
-        graphdata.push({ year2: xValue, value: yValue });
-        chart.setData(graphdata)
-        setTimeout(buildLineChart, 1000);
-    }
-    function renderPlot(data) {
-        chart = Morris.Line({
-            element: 'myfirstchart',
-            data: data,
-            xkey: 'year2',
-            ykeys: ['value'],
-            labels: ['Value']
-        });
-    }
-</script>
-
 
 <!-- jQuery -->
 <script src="js/jquery.js"></script>

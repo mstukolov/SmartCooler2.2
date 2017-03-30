@@ -15,17 +15,40 @@ var options = {
     }
 };
 //Инициализация IOT-сервиса
-var iotf = require("ibmiotf");
-
-/*var configType = {
-    "org" : "kwxqcy",
-    "type" : "gwtype",
-    "id" : "Gateway01",
+var iotfService = require("ibmiotf");
+var appClientConfig = {
+    "org" : 'kwxqcy',
+    "id" : 'a-kwxqcy-app5',
     "domain": "internetofthings.ibmcloud.com",
-    "auth-method" : "token",
-    "auth-token" : "qwerty123"
-};*/
-var appClient = new iotf.IotfApplication(config);
+    "auth-key" : 'a-kwxqcy-1dw7hvzvwk',
+    "auth-token" : 'tsM8N(FS@iOc3CId+5'
+}
+var appClient = new iotfService.IotfApplication(appClientConfig);
+appClient.connect();
+appClient.on("connect", function () {
+    appClient.subscribeToDeviceEvents();
+});
+var lastdata = [];
+appClient.on("deviceEvent", function (deviceType, deviceId, eventType, format, payload) {
+    /*if(lastdata.length > 4){
+        lastdata.shift()
+        var lastVal = findLastMessageByDeviceId("ESP8266-2229160");
+        if(lastVal != undefined){
+            console.log('Last value: ' + lastVal['d']['param1'])
+        }else {console.log('Last value: NULL')}
+    }*/
+        console.log("Device Event from :: "+deviceType+" : "+deviceId+" of event "+eventType+" with payload : "+payload);
+        lastdata.push(JSON.parse(payload))
+        console.log('Total messagess: ' + lastdata.length)
+
+});
+function findLastMessageByDeviceId(deviceid) {
+    var reverse = lastdata.reverse();
+    var lastVal = reverse.find(function (element, index, array) {
+        return element['d']['deviceid'] == deviceid
+    })
+    return lastVal;
+}
 /*
 var gatewayClient = new iotf.IotfGateway(configType);
 gatewayClient.log.setLevel('debug');
@@ -54,8 +77,6 @@ app.get('/testdeviceconnection', function (req, res) {
         res.send('Success device connection from Node.js');
     });
 });
-
-
 app.get("/savedevice", function(req, res) {
     //gatewayClient.publishDeviceEvent(req.query.devtype, req.query.devid, "status","json",'{"d" : { "cpu" : 60, "mem" : 50 }}');
 
@@ -96,10 +117,21 @@ app.get('/getcurvalues', function(req, res){
    if(typeof deviceList !== "undefined"){
        deviceList.forEach(function(item, i, arr) {
            var point = {};
-           var currentValue = getRandomInt(0,20);
+           //var currentValue = getRandomInt(0,20);
+           var last = findLastMessageByDeviceId(item)
+           if(last != undefined){
+               var currentValue = last['d']['param1'];
+               if(last['d']['param2'] != 0){
+                   point['b'] = last['d']['param2'];
+               } else { point['b'] = 1; }
+
+           }else{
+               currentValue = 0
+           }
+
            point['y'] = item;
            point['a'] = currentValue;
-           point['b'] = 20;
+
            newValues.push(point)
        });
        res.send(newValues);
@@ -150,7 +182,6 @@ app.get("/getOrgDevicesGPS", function(req, res) {
         res.send(result);
     });
 });
-
 app.get("/testQuery", function(req, res) {
     var network = req.query.wifi;
     var password = req.query.password;

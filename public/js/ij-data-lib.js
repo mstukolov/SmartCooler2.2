@@ -17,9 +17,11 @@ window.onload = function () {
     map = new YMaps.Map(document.getElementById("YMapsID"));
     // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
     map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
-
     map.enableScrollZoom()
-
+    var myEventListener = YMaps.Events.observe(map, map.Events.Click, function (map, mEvent) {
+        var placemark = new YMaps.Placemark(mEvent.getGeoPoint());
+        map.addOverlay(placemark);
+    }, this);
 };
 
 //Функция для формирования полного списка доступных устройств
@@ -135,6 +137,9 @@ function getLastDataInAjax() {
                     var valueColumn = item['y'];
                     point[yColumn] = (new Date()).getTime();
                     point[valueColumn] = item['a'];
+                    if(historyData.length > 450){
+                        historyData.shift()
+                    }
                     historyData.push(point);
                     sumFilled += item['a'];
                     sumTotal += item['b'];
