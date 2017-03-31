@@ -117,12 +117,15 @@ app.get('/getcurvalues', function(req, res){
    if(typeof deviceList !== "undefined"){
        deviceList.forEach(function(item, i, arr) {
            var point = {};
-           //var currentValue = getRandomInt(0,20);
            var last = findLastMessageByDeviceId(item)
            if(last != undefined){
                var currentValue = last['d']['param1'];
-               if(last['d']['param2'] != 0){
-                   point['b'] = last['d']['param2'];
+               var maxValue = last['d']['param2'];
+
+               if(maxValue == 0){maxValue = currentValue}
+               if(maxValue != 0){
+                   if(currentValue > maxValue) {maxValue = currentValue}
+                   point['b'] = maxValue;
                } else { point['b'] = 1; }
 
            }else{

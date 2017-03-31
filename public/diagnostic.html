@@ -17,6 +17,9 @@
     <!-- Custom CSS -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
+    <!-- Morris Charts CSS -->
+    <link href="css/plugins/morris.css" rel="stylesheet">
+
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -27,27 +30,6 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.dateAxisRenderer.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/jqplot/1.0.8/jquery.jqplot.min.css" />
-    <!--Integrating Pie Chart-->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.pieRenderer.min.js"></script>
-    <!--Jqplot Zooming-->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.cursor.min.js"></script>
-
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
-    <style>
-        #map {
-            height: 400px;
-            width: 100%;
-        }
-    </style>
-    <script src="js/ij-data-lib.js"></script>
-    <script src="https://api-maps.yandex.ru/1.1/index.xml" type="text/javascript"></script>
 </head>
 
 <body>
@@ -78,8 +60,7 @@
                                         <img class="media-object" src="http://placehold.it/50x50" alt="">
                                     </span>
                                 <div class="media-body">
-                                    <h5 class="media-heading">
-                                        <strong>John Smith</strong>
+                                    <h5 class="media-heading"><strong>John Smith</strong>
                                     </h5>
                                     <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
                                     <p>Lorem ipsum dolor sit amet, consectetur...</p>
@@ -94,8 +75,7 @@
                                         <img class="media-object" src="http://placehold.it/50x50" alt="">
                                     </span>
                                 <div class="media-body">
-                                    <h5 class="media-heading">
-                                        <strong>John Smith</strong>
+                                    <h5 class="media-heading"><strong>John Smith</strong>
                                     </h5>
                                     <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
                                     <p>Lorem ipsum dolor sit amet, consectetur...</p>
@@ -110,8 +90,7 @@
                                         <img class="media-object" src="http://placehold.it/50x50" alt="">
                                     </span>
                                 <div class="media-body">
-                                    <h5 class="media-heading">
-                                        <strong>John Smith</strong>
+                                    <h5 class="media-heading"><strong>John Smith</strong>
                                     </h5>
                                     <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
                                     <p>Lorem ipsum dolor sit amet, consectetur...</p>
@@ -173,7 +152,7 @@
         <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav side-nav">
-                <li>
+                <li class="active">
                     <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
                 </li>
                 <li>
@@ -191,7 +170,7 @@
                 <li>
                     <a href="administration.html"><i class="fa fa-fw fa-wrench"></i> Администрирование</a>
                 </li>
-                <li class="active">
+                <li>
                     <a href="diagnostic.html"><i class="fa fa-fw fa-desktop"></i> Диагностика</a>
                 </li>
                 <li class="hidden">
@@ -239,21 +218,25 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">
-                        Диагностика
-                        <small>проверка устройств</small>
+                        Dashboard <small>Statistics Overview</small>
                     </h1>
                     <ol class="breadcrumb">
-                        <li>
-                            <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
-                        </li>
                         <li class="active">
-                            <i class="fa fa-file"></i> Blank Page
+                            <i class="fa fa-dashboard"></i> Dashboard
                         </li>
                     </ol>
                 </div>
             </div>
             <!-- /.row -->
-            <!-- Начало формирования страницы -->
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="alert alert-info alert-dismissable">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <i class="fa fa-info-circle"></i>  <strong>Like SB Admin?</strong> Try out <a href="http://startbootstrap.com/template-overviews/sb-admin-2" class="alert-link">SB Admin 2</a> for additional features!
+                    </div>
+                </div>
+            </div>
             <!-- /.row -->
 
             <div class="row">
@@ -347,20 +330,29 @@
                 </div>
             </div>
             <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Area Chart</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="morris-area-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+
             <div class="row">
                 <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-gears"></i> Выбор устройств</h3>
+                            <h3 class="panel-title"><i class="fa fa-long-arrow-right fa-fw"></i> Donut Chart</h3>
                         </div>
                         <div class="panel-body">
-                            <select multiple class="form-control"
-                                    id="deviceSelection" style="width: 100%;height:300px; font-size: 22px" class="selectpicker">
-                            </select>
-                            <button type="button" id="devListBtn" style="width: 100%"
-                                    onclick="redrawChartsByDeviceList()"
-                                    class="btn btn-primary btn-lg">Выбрать устройства</button>
-
+                            <div id="morris-donut-chart"></div>
                             <div class="text-right">
                                 <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
                             </div>
@@ -370,12 +362,45 @@
                 <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-pie-chart"></i> Суммарное количество</h3>
+                            <h3 class="panel-title"><i class="fa fa-clock-o fa-fw"></i> Tasks Panel</h3>
                         </div>
                         <div class="panel-body">
-                            <div id="pie-chart"></div>
+                            <div class="list-group">
+                                <a href="#" class="list-group-item">
+                                    <span class="badge">just now</span>
+                                    <i class="fa fa-fw fa-calendar"></i> Calendar updated
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <span class="badge">4 minutes ago</span>
+                                    <i class="fa fa-fw fa-comment"></i> Commented on a post
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <span class="badge">23 minutes ago</span>
+                                    <i class="fa fa-fw fa-truck"></i> Order 392 shipped
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <span class="badge">46 minutes ago</span>
+                                    <i class="fa fa-fw fa-money"></i> Invoice 653 has been paid
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <span class="badge">1 hour ago</span>
+                                    <i class="fa fa-fw fa-user"></i> A new user has been added
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <span class="badge">2 hours ago</span>
+                                    <i class="fa fa-fw fa-check"></i> Completed task: "pick up dry cleaning"
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <span class="badge">yesterday</span>
+                                    <i class="fa fa-fw fa-globe"></i> Saved the world
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <span class="badge">two days ago</span>
+                                    <i class="fa fa-fw fa-check"></i> Completed task: "fix error on sales page"
+                                </a>
+                            </div>
                             <div class="text-right">
-                                <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
+                                <a href="#">View All Activity <i class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                     </div>
@@ -383,69 +408,79 @@
                 <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-map-marker"></i> Местоположение</h3>
+                            <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Transactions Panel</h3>
                         </div>
                         <div class="panel-body">
-                            <div id="YMapsID" style="width:100%;height:350px"></div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Order Date</th>
+                                        <th>Order Time</th>
+                                        <th>Amount (USD)</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>3326</td>
+                                        <td>10/21/2013</td>
+                                        <td>3:29 PM</td>
+                                        <td>$321.33</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3325</td>
+                                        <td>10/21/2013</td>
+                                        <td>3:20 PM</td>
+                                        <td>$234.34</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3324</td>
+                                        <td>10/21/2013</td>
+                                        <td>3:03 PM</td>
+                                        <td>$724.17</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3323</td>
+                                        <td>10/21/2013</td>
+                                        <td>3:00 PM</td>
+                                        <td>$23.71</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3322</td>
+                                        <td>10/21/2013</td>
+                                        <td>2:49 PM</td>
+                                        <td>$8345.23</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3321</td>
+                                        <td>10/21/2013</td>
+                                        <td>2:23 PM</td>
+                                        <td>$245.12</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3320</td>
+                                        <td>10/21/2013</td>
+                                        <td>2:15 PM</td>
+                                        <td>$5663.54</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3319</td>
+                                        <td>10/21/2013</td>
+                                        <td>2:13 PM</td>
+                                        <td>$943.45</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                             <div class="text-right">
-                                <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
+                                <a href="#">View All Transactions <i class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div id="summary-line-chart"></div>
-            <div id="bar-current-value"></div>
-
-
-
-            <script>
-                var chart = Morris.Line({
-                    element: 'summary-line-chart',
-                    data: historyData,
-                    xkey: 'y',
-                    ykeys: devices,
-                    labels: selectedDevices,
-                    dateFormat: function (x) { return new Date(x).toDateString(); }
-                });
-
-                var barData = []
-                config = {
-                    data: barData,
-                    barGap:1,
-                    barSizeRatio:0.4,
-                    gridTextSize:'18px',
-                    barColors: ["#0099ff", "#e6ffff", "#1AB244", "#B29215"],
-                    barWidth: 10,
-                    xkey: 'y',
-                    ykeys: ['a', 'b'],
-                    labels: ['Full', 'Out'],
-                    fillOpacity: 0.8,
-                    hideHover: 'auto',
-                    behaveLikeLine: true,
-                    resize: true,
-                    pointFillColors:['#ffffff'],
-                    pointStrokeColors: ['black'],
-                    lineColors:['gray','red']
-                };
-                config.element = 'bar-current-value';
-                config.stacked = true;
-                var barChart = Morris.Bar(config);
-                var donut = Morris.Donut({
-                    element: 'pie-chart',
-                    data: [
-                        {label: "Заполнено\n(литров)", value: 0},
-                        {label: "Пусто\n(литров)", value: 0}
-                    ],
-                    colors: [
-                        '#66ccff',
-                        '#e6ffe6',
-                        '#67C69D',
-                        '#95D7BB'
-                    ],
-                });
-            </script>
+            <!-- /.row -->
 
         </div>
         <!-- /.container-fluid -->
@@ -457,13 +492,15 @@
 <!-- /#wrapper -->
 
 <!-- jQuery -->
-<!--<script src="js/jquery.js"></script>-->
+<script src="js/jquery.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
 <script src="js/bootstrap.min.js"></script>
 
-<!-- jQuery -->
-<script src="js/jquery.js"></script>
+<!-- Morris Charts JavaScript -->
+<script src="js/plugins/morris/raphael.min.js"></script>
+<script src="js/plugins/morris/morris.min.js"></script>
+<script src="js/plugins/morris/morris-data.js"></script>
 
 </body>
 

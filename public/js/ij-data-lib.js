@@ -18,10 +18,10 @@ window.onload = function () {
     // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
     map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
     map.enableScrollZoom()
-    var myEventListener = YMaps.Events.observe(map, map.Events.Click, function (map, mEvent) {
+   /* var myEventListener = YMaps.Events.observe(map, map.Events.Click, function (map, mEvent) {
         var placemark = new YMaps.Placemark(mEvent.getGeoPoint());
         map.addOverlay(placemark);
-    }, this);
+    }, this);*/
 };
 
 //Функция для формирования полного списка доступных устройств
@@ -88,7 +88,8 @@ function showOverlaysOnYandexMap() {
         placemark.description = "Организация-1";
         map.addOverlay(placemark)
     });
-    var s = new YMaps.Style();
+
+   /* var s = new YMaps.Style();
     s.lineStyle = new YMaps.LineStyle();
     s.lineStyle.strokeColor = '0000FF55';
     s.lineStyle.strokeWidth = '5';
@@ -97,7 +98,7 @@ function showOverlaysOnYandexMap() {
     var pl = new YMaps.Polyline(tube);
     pl.setStyle("example#CustomLine");
 
-    map.addOverlay(pl);
+    map.addOverlay(pl);*/
 }
 //Функция поиска значений в массиве JSON-объектов
 function getGPSPoint(key, array) {
