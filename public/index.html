@@ -246,8 +246,9 @@
 
                     <h1 class="page-header">
                         <img src="http://www.center2m.ru/logo.png">
-                        Мониторинг
-                        <small>показаний устройств</small>
+                        <span style='padding-left:50px;'> </span>
+                        SmartCooler&trade;
+                        <small>ПАК "Умный Кулер"</small>
                     </h1>
                     <ol class="breadcrumb">
                         <li class="active">
@@ -269,7 +270,7 @@
                                     <i class="fa fa-cubes fa-5x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
-                                    <div class="huge">12</div>
+                                    <div class="huge">8</div>
                                     <div>Общее количество устройств</div>
                                 </div>
                             </div>
@@ -291,7 +292,7 @@
                                     <i class="fa fa-battery-full fa-5x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
-                                    <div class="huge">6</div>
+                                    <div class="huge">1</div>
                                     <div>Отличное состояние</div>
                                 </div>
                             </div>
@@ -313,7 +314,7 @@
                                     <i class="fa fa-battery-half fa-5x" aria-hidden="true"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
-                                    <div class="huge">4</div>
+                                    <div class="huge">6</div>
                                     <div>Стабильное состояние</div>
                                 </div>
                             </div>
@@ -335,7 +336,7 @@
                                     <i class="fa fa-battery-empty fa-5x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
-                                    <div class="huge">2</div>
+                                    <div class="huge">1</div>
                                     <div>Требуется обслуживание</div>
                                 </div>
                             </div>
@@ -405,14 +406,13 @@
             <div id="bar-current-value"></div>
 
 
-
             <script>
                 var chart = Morris.Line({
                     element: 'summary-line-chart',
                     data: historyData,
                     xkey: 'y',
                     ykeys: devices,
-                    labels: selectedDevices,
+                    labels: devices,
                     dateFormat: function (x) { return new Date(x).toDateString(); }
                 });
 

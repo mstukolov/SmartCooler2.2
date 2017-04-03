@@ -142,8 +142,8 @@ function getLastDataInAjax() {
                         historyData.shift()
                     }
                     historyData.push(point);
-                    sumFilled += item['a'];
-                    sumTotal += item['b'];
+                    sumFilled += Math.round(parseFloat(item['a']));
+                    sumTotal += Math.round(parseFloat(item['b']));
             });
             //console.log('sumFilled: ' + sumFilled + '/sumTotal: ' + sumTotal)
             chart.setData(historyData)
@@ -157,6 +157,9 @@ function getLastDataInAjax() {
             tpoint1['value'] = sumFilled;
             tpoint2['label'] = "Пусто\n(литров)";
             tpoint2['value'] = sumTotal - sumFilled;
+
+         /*   console.log(tpoint1)
+            console.log(tpoint2)*/
 
             summaryData.push(tpoint1);
             summaryData.push(tpoint2);

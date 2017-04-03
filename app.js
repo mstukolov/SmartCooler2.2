@@ -29,6 +29,8 @@ appClient.on("connect", function () {
     appClient.subscribeToDeviceEvents();
 });
 var lastdata = [];
+var set = new Set();
+
 appClient.on("deviceEvent", function (deviceType, deviceId, eventType, format, payload) {
     /*if(lastdata.length > 4){
         lastdata.shift()
@@ -37,8 +39,13 @@ appClient.on("deviceEvent", function (deviceType, deviceId, eventType, format, p
             console.log('Last value: ' + lastVal['d']['param1'])
         }else {console.log('Last value: NULL')}
     }*/
+        if(lastdata.length > 96){
+            lastdata.shift()
+        }
         console.log("Device Event from :: "+deviceType+" : "+deviceId+" of event "+eventType+" with payload : "+payload);
         lastdata.push(JSON.parse(payload))
+        set.add(JSON.parse(payload))
+
         console.log('Total messagess: ' + lastdata.length)
 
 });
@@ -193,17 +200,17 @@ app.get("/testQuery", function(req, res) {
 
 
 //Код для запуска в локальном режиме
-var hostPort = 4444;
+/*var hostPort = 4444;
 app.listen(hostPort, function () {
     console.log('Example app listening on port: ' + hostPort);
-});
+});*/
 
 
 //Код для публикации на Bluemix-сервере
-/*var appEnv = cfenv.getAppEnv();
+var appEnv = cfenv.getAppEnv();
  app.listen(appEnv.port, '0.0.0.0', function () {
  console.log('Example app listening on port 3000!');
- });*/
+ });
 
 //---CRUD operation for mysql db----
 function createTable() {
