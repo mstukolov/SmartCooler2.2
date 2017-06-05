@@ -67,15 +67,12 @@ function getAllDevices() {
                 '<td><output id="orgid_' + index + '" style="font-size: larger">'+ data[index].orgid +'</output></td>' +
                 '<td><output type="text" id="devid_' + index + '" style="font-size: larger">'+ data[index].devid +'</output></td>' +
                 '<td><output type="text" id="type_' + index + '" style="font-size: larger">'+ data[index].devtype +'</output></td>' +
+                '<td><output type="text" id="type_' + index + '" style="font-size: larger">'+ 5 +'</output></td>' +
                 '<td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage_' + index + '" class="form-control btn-manage" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>' +
                 '</tr>');
 
             $("#tableAddRow").append(tempTr);
-
-
         }
-
-
     });
 }
 

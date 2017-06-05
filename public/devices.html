@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin - Bootstrap Admin Template</title>
+    <title>SmartCooler - Admin Panel</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -493,6 +493,7 @@
                                         <th>Организация</th>
                                         <th>Код устройства</th>
                                         <th>Тип устройства</th>
+                                        <th>Кол-во бутылок</th>
                                         <th>Управление</th>
                                     </tr>
                                     </thead>
@@ -502,6 +503,7 @@
                                         <td><output type="text" id="deviceid" class="form-control"/></td>
                                         <td><output type="text" id="name" class="form-control" /></td>
                                         <td><output type="text" id="type" class="form-control" /></td>
+                                        <td><output type="text" id="qty" class="form-control" /></td>
                                         <td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage" class="form-control" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>
                                     </tr>
                                     </tbody>
@@ -517,6 +519,18 @@
                                         console.log('page is started');
                                         //$('#row1').addClass('bg-danger');
                                         //document.getElementById("row01").className  = "bg-danger";
+                                    }
+                                    function TurnReleON() {
+                                        $.get("/releon" ,function(data) {
+
+                                        })
+                                        console.log('Rele is on')
+                                    }
+                                    function TurnReleOff() {
+                                        $.get("/releoff" ,function(data) {
+
+                                        })
+                                        console.log('Rele is off')
                                     }
                                     function testButton() {
                                         console.log('change ico')

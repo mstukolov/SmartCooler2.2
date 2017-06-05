@@ -2,6 +2,9 @@ var cfenv = require("cfenv");
 require('dotenv').load();
 var config = require('./config.json');
 
+//email dependencies
+//const nodemailer = require('nodemailer');
+
 //Инициализация веб-сервера и основных настроек
 var express = require("express");
 var app = express();
@@ -26,7 +29,7 @@ var appClientConfig = {
 var appClient = new iotfService.IotfApplication(appClientConfig);
 appClient.connect();
 appClient.on("connect", function () {
-    appClient.subscribeToDeviceEvents();
+    appClient.subscribeToDeviceEvents("SmartCooler","C2MSmartCooler2","+","json");
 });
 var lastdata = [];
 var set = new Set();
@@ -43,12 +46,18 @@ appClient.on("deviceEvent", function (deviceType, deviceId, eventType, format, p
             lastdata.shift()
         }
         console.log("Device Event from :: "+deviceType+" : "+deviceId+" of event "+eventType+" with payload : "+payload);
-        lastdata.push(JSON.parse(payload))
-        set.add(JSON.parse(payload))
-
+        addLastValToStack(JSON.parse(payload))
         console.log('Total messagess: ' + lastdata.length)
 
 });
+function addLastValToStack(message) {
+    for (var i = 0; i < lastdata.length; i++) {
+        var current = lastdata[i];
+        if(current['d']['deviceid'] == message['d']['deviceid']) lastdata.splice(i,1)
+    }
+    //if(message['d']['param1'] < 2){sendAlertToEmail(); console.log('Current value is lower than 2')}
+    lastdata.push(message)
+}
 function findLastMessageByDeviceId(deviceid) {
     var reverse = lastdata.reverse();
     var lastVal = reverse.find(function (element, index, array) {
@@ -111,10 +120,6 @@ app.get("/savedevice", function(req, res) {
     saveDeviceToMySql(req.query.orgid, req.query.devid, req.query.devtype);
     res.redirect("devices.html")
 });
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 app.get('/getcurvalues', function(req, res){
 
     var deviceList = req.query.devices
@@ -175,13 +180,14 @@ app.get("/deletedevice", function(req, res) {
     console.log('Device deleted: ' + deviceid);
 });
 app.get("/getOrgDevices", function(req, res) {
+
     var orgid = req.query.orgid;
     var sql = 'SELECT * FROM devices where orgid = ?';
-
     db.query(sql, [req.query.orgid], function (err, result) {
         if(err) throw err;
         res.send(result);
     });
+
 });
 app.get("/getOrgDevicesGPS", function(req, res) {
     var orgid = req.query.orgid;
@@ -198,19 +204,47 @@ app.get("/testQuery", function(req, res) {
     console.log('Запрос пришел: ' + network + ":" + password);
 });
 
+//работа с реле
+//включение реле
+app.get("/releon", function(req, res) {
+    var on={"rel":1};
+    on = JSON.stringify(on);
+    appClient.publishDeviceCommand("SmartCooler","TestCooler-RT-71", "rele", "json", on);
+    console.log('Реле успешно запущено');
+});
+app.get("/releoff", function(req, res) {
+    var off={"rel":0};
+    off = JSON.stringify(off);
+    appClient.publishDeviceCommand("SmartCooler","TestCooler-RT-71", "rele", "json", off);
+    console.log('Реле остановлено');
+});
+
+
+//-----------------------
 
 //Код для запуска в локальном режиме
-/*var hostPort = 4444;
+
+var appEnv = cfenv.getAppEnv();
+var port = appEnv.port || 8080;
+
+app.listen(port, function () {
+    console.log("Express WebApp started on : http://localhost:" + port);
+});
+
+
+/*
+var hostPort = 4444;
 app.listen(hostPort, function () {
     console.log('Example app listening on port: ' + hostPort);
-});*/
+});
+*/
 
 
 //Код для публикации на Bluemix-сервере
-var appEnv = cfenv.getAppEnv();
+/*var appEnv = cfenv.getAppEnv();
  app.listen(appEnv.port, '0.0.0.0', function () {
  console.log('Example app listening on port 3000!');
- });
+ });*/
 
 //---CRUD operation for mysql db----
 function createTable() {
@@ -244,3 +278,26 @@ function getOrgDevices() {
     return data;
 }
 
+/*
+//Send email messages
+function sendAlertToEmail() {
+    // create reusable transporter object using the default SMTP transport
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'maxim.stukolov@gmail.com',
+            pass: 'carter2014!'
+        }
+    });
+// setup email data with unicode symbols
+    var mailOptions = {
+        from: '"SmartCooler-C2M 👻" <foo@blurdybloop.com>', // sender address
+        to: 'maks@center2m.com', // list of receivers
+        subject: 'Smart cooler alerts ✔', // Subject line
+        text: 'The Volume of smart cooler is lower. please change the bottle!', // plain text body
+        html: '<b>The Volume of smart cooler is lower. please change the bottle!</b>' // html body
+    };
+// send mail with defined transport object
+    transporter.sendMail(mailOptions);
+}
+*/
