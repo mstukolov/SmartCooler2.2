@@ -389,33 +389,27 @@
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                             <h2 class="modal-title">Управление устройством: <span id="divOrgDevId" style="font-size: larger"/></h2>
                             <div class="modal-header">
-                                <div id="online-device-chart"></div>
-                                <div id="map"></div>
-                                <script>
-                                    var map = document.getElementById("map");
-                                    $("#modalManageWindow").on("shown.bs.modal", function () {
-                                        google.maps.event.trigger(map, "resize");
-                                    });
-                                    document.onload = initMap();
-                                    function initMap() {
-                                        var uluru = {lat: 55.740077, lng: 37.605275};
-                                        var map = new google.maps.Map(document.getElementById('map'), {
-                                            zoom: 15,
-                                            center: uluru
-                                        });
-                                        var marker = new google.maps.Marker({
-                                            position: uluru,
-                                            map: map
-                                        });
-                                    }
-                                </script>
+
+                                <form method="get" action="/updateDeviceParams">
+                                <div class="form-group">
+                                    <input type="hidden" id="orgDevId" name="orgDevId"/>
+                                    <label for="devQtyChange">Введите количество:</label>
+                                    <input type="text" class="form-control" id="devQtyChange" name="devQtyChange">
+                                </div>
+                                    <div class="form-group">
+                                        <label for="emailGroup">Группа рассылки:</label>
+                                        <textarea class="form-control" id="emailGroup" name="emailGroup" placeholder="Message"></textarea>
+                                    </div>
+                                <button type="submit" class="btn btn-default" onclick="getDeviceName()">Сохранить</button>
+                                </form>
                             </div>
-
-                            <script async defer
-                                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqR0TygdY-XcyjIWl1_2-G4A7buyoXS0k&callback=initMap">
-                            </script>
                         </div>
-
+                        <script>
+                            function getDeviceName() {
+                                var device =  document.getElementById("divOrgDevId").innerHTML.split(":")[1]
+                                document.getElementById("orgDevId").value = device;
+                            }
+                        </script>
                         <div class="modal-body">
 
                             <div class="panel panel-default panel-horizontal">
@@ -494,6 +488,7 @@
                                         <th>Код устройства</th>
                                         <th>Тип устройства</th>
                                         <th>Кол-во бутылок</th>
+                                        <th>Email</th>
                                         <th>Управление</th>
                                     </tr>
                                     </thead>
@@ -504,6 +499,7 @@
                                         <td><output type="text" id="name" class="form-control" /></td>
                                         <td><output type="text" id="type" class="form-control" /></td>
                                         <td><output type="text" id="qty" class="form-control" /></td>
+                                        <td><output type="text" id="email" class="form-control" /></td>
                                         <td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage" class="form-control" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>
                                     </tr>
                                     </tbody>
@@ -512,8 +508,8 @@
                                 <script type="application/javascript">
                                     var chart;
                                     var graphdata = [];
-                                    document.onload = renderPlot();
-                                    document.onload = buildLineChart();
+
+
                                     document.onload = initDeviceConnectionHistory();
                                     function initpage() {
                                         console.log('page is started');

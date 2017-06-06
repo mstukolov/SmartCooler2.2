@@ -67,7 +67,8 @@ function getAllDevices() {
                 '<td><output id="orgid_' + index + '" style="font-size: larger">'+ data[index].orgid +'</output></td>' +
                 '<td><output type="text" id="devid_' + index + '" style="font-size: larger">'+ data[index].devid +'</output></td>' +
                 '<td><output type="text" id="type_' + index + '" style="font-size: larger">'+ data[index].devtype +'</output></td>' +
-                '<td><output type="text" id="type_' + index + '" style="font-size: larger">'+ 5 +'</output></td>' +
+                '<td><output type="text" id="qty_' + index + '" style="font-size: larger">'+ data[index].qtyBottle +'</output></td>' +
+                '<td><output type="text" id="email_' + index + '" style="font-size: larger">'+ data[index].email +'</output></td>' +
                 '<td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage_' + index + '" class="form-control btn-manage" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>' +
                 '</tr>');
 
@@ -97,18 +98,4 @@ function initDeviceConnectionHistory() {
         labels: ['Value']
     });
 }
-function buildLineChart() {
-    var xValue = (new Date()).getTime();
-    var yValue = Math.random()*100;
-    graphdata.push({ year2: xValue, value: yValue });
-    chart.setData(graphdata)
-    setTimeout(buildLineChart, 1000);
-}
-function renderPlot() {
-    chart = Morris.Line({
-        element: 'online-device-chart',
-        xkey: 'year2',
-        ykeys: ['value'],
-        labels: ['Value']
-    });
-}
+

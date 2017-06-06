@@ -3,7 +3,7 @@ require('dotenv').load();
 var config = require('./config.json');
 
 //email dependencies
-//const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 
 //Инициализация веб-сервера и основных настроек
 var express = require("express");
@@ -93,6 +93,85 @@ app.get('/testdeviceconnection', function (req, res) {
         res.send('Success device connection from Node.js');
     });
 });
+
+app.get('/test-node-red-con', function (req, res) {
+    res.send('Success device connection from Smart Coller Node.js');
+});
+
+//Изменение свойств устройства в БД MySQL на страницы devices.html
+app.get('/updateDeviceParams', function (req, res) {
+    console.log('DevID:'+req.query.orgDevId+ ', ' + 'New Qty: ' + req.query.devQtyChange);
+    console.log('emailGroup:'+req.query.emailGroup);
+
+    var sql;
+    //SQL-скрипт если заполнены оба поля количество и email
+    if(req.query.devQtyChange !='' && req.query.emailGroup != '') {
+        sql = 'UPDATE devices SET ' +
+            'qtyBottle=' + req.query.devQtyChange + "," +
+            'email=' + "'" + req.query.emailGroup + "'" +
+            ' where devid=' + "'" + req.query.orgDevId + "'";
+
+        console.log(sql)
+        db.query(sql, function (err, result) {
+            if(err) throw err;
+            qtyChangedEvent(req.query.devQtyChange, req.query.orgDevId, res)
+        });
+
+    }
+
+    //SQL-скрипт если заполнено количество, а email пусто
+    if(req.query.devQtyChange !='' && req.query.emailGroup == ''){
+        sql = "UPDATE devices SET " +
+            "qtyBottle='" + req.query.devQtyChange + "'" +
+            " where devid='"  + req.query.orgDevId + "'";
+
+        console.log(sql)
+        db.query(sql, function (err, result) {
+            if(err) throw err;
+            qtyChangedEvent(req.query.devQtyChange, req.query.orgDevId, res)
+        });
+    }
+
+    //SQL-скрипт если не заполнено количество, и заполнено email
+    if(req.query.devQtyChange == '' && req.query.emailGroup != ''){
+        sql = "UPDATE devices SET " +
+            "email='" + req.query.emailGroup + "'" +
+            " where devid=" + "'" + req.query.orgDevId + "'";
+        console.log(sql)
+        db.query(sql, function (err, result) {if(err) throw err;});
+        res.redirect("devices.html")
+    }
+
+
+});
+function qtyChangedEvent(newQty, deviceid, res){
+    var sqlEmailGroup = 'SELECT email from devices where devid ='+ '"' + deviceid +'";'
+
+    db.query(sqlEmailGroup, function (err, result) {
+        if(err) throw err;
+        var string=JSON.stringify(result);
+        console.log('>> string: ', string );
+        var json =  JSON.parse(string);
+        console.log('>> json: ', json);
+        console.log('>> device.email: ', json[0].email);
+
+        if(newQty > 0) {
+            sendAlertToEmail(
+                deviceid,
+                '<b>Количество бутылок изменилось на:' + newQty + '</b>' + '</br><i>C уважением, облачный сервис SmartCooler.</i>',
+                json[0].email
+            );
+        }else{
+            sendAlertToEmail(
+                deviceid,
+                '<b>У вас последняя бутылка!</b>' + '</br><i>C уважением, облачный сервис SmartCooler.</i>',
+                json[0].email
+            );
+        }
+        res.redirect("devices.html")
+    });
+}
+
 app.get("/savedevice", function(req, res) {
     //gatewayClient.publishDeviceEvent(req.query.devtype, req.query.devid, "status","json",'{"d" : { "cpu" : 60, "mem" : 50 }}');
 
@@ -278,9 +357,9 @@ function getOrgDevices() {
     return data;
 }
 
-/*
+
 //Send email messages
-function sendAlertToEmail() {
+function sendAlertToEmail(device, message, email) {
     // create reusable transporter object using the default SMTP transport
     var transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -291,13 +370,12 @@ function sendAlertToEmail() {
     });
 // setup email data with unicode symbols
     var mailOptions = {
-        from: '"SmartCooler-C2M 👻" <foo@blurdybloop.com>', // sender address
-        to: 'maks@center2m.com', // list of receivers
-        subject: 'Smart cooler alerts ✔', // Subject line
-        text: 'The Volume of smart cooler is lower. please change the bottle!', // plain text body
-        html: '<b>The Volume of smart cooler is lower. please change the bottle!</b>' // html body
+        from: device, // sender address
+        to: email, // list of receivers
+        subject: device + ':Оповещение SmartCoolers ✔', // Subject line
+        html: message // html body
     };
 // send mail with defined transport object
     transporter.sendMail(mailOptions);
 }
-*/
+
