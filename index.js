@@ -4,6 +4,7 @@ var config = require('./config.json');
 
 //email dependencies
 const nodemailer = require('nodemailer');
+//
 
 //Инициализация веб-сервера и основных настроек
 var express = require("express");
@@ -21,7 +22,7 @@ var options = {
 var iotfService = require("ibmiotf");
 var appClientConfig = {
     "org" : 'kwxqcy',
-    "id" : 'a-kwxqcy-app5',
+    "id" : 'a-kwxqcy-app5566',
     "domain": "internetofthings.ibmcloud.com",
     "auth-key" : 'a-kwxqcy-1dw7hvzvwk',
     "auth-token" : 'tsM8N(FS@iOc3CId+5'
@@ -29,7 +30,8 @@ var appClientConfig = {
 var appClient = new iotfService.IotfApplication(appClientConfig);
 appClient.connect();
 appClient.on("connect", function () {
-    appClient.subscribeToDeviceEvents("SmartCooler","C2MSmartCooler2","+","json");
+    //appClient.subscribeToDeviceEvents("Тип устройства","Код устройства","+","json");
+    appClient.subscribeToDeviceEvents("SmartCooler","+","+","json");
 });
 var lastdata = [];
 var set = new Set();
@@ -45,8 +47,28 @@ appClient.on("deviceEvent", function (deviceType, deviceId, eventType, format, p
         if(lastdata.length > 96){
             lastdata.shift()
         }
+
         console.log("Device Event from :: "+deviceType+" : "+deviceId+" of event "+eventType+" with payload : "+payload);
+
+        var prevDeviceValue = 0;
+        var vmax = 0;
+        if(typeof findLastMessageByDeviceId(deviceId) !== "undefined"){
+            //Получение предыдущего значения из стэка в памяти приложения
+            prevDeviceValue = findLastMessageByDeviceId(deviceId)['d']['param1'];
+            vmax = findLastMessageByDeviceId(deviceId)['d']['param2']
+        }
+
+
         addLastValToStack(JSON.parse(payload))
+        var newDeviceValue = JSON.parse(payload)['d']['param1']
+
+        if(typeof prevDeviceValue !== "undefined"){
+            console.log('Изменение:' + prevDeviceValue + '-->' + newDeviceValue + ':' + vmax);
+            eventDeviceDefinition(deviceId, newDeviceValue, prevDeviceValue, vmax)
+        }
+
+
+
         console.log('Total messagess: ' + lastdata.length)
 
 });
@@ -65,11 +87,7 @@ function findLastMessageByDeviceId(deviceid) {
     })
     return lastVal;
 }
-/*
-var gatewayClient = new iotf.IotfGateway(configType);
-gatewayClient.log.setLevel('debug');
-gatewayClient.connect();
-*/
+
 //----Инициализация подключения к MySQL
 var mysql = require('mysql');
 var db = mysql.createConnection({
@@ -168,12 +186,13 @@ function qtyChangedEvent(newQty, deviceid, res){
                 json[0].email
             );
         }
-        res.redirect("devices.html")
+        //res.redirect("devices.html", {root: __dirname + '/public/'})
+        res.sendFile("devices.html", {root: __dirname + '/public/'})
     });
 }
 
 app.get("/savedevice", function(req, res) {
-    //gatewayClient.publishDeviceEvent(req.query.devtype, req.query.devid, "status","json",'{"d" : { "cpu" : 60, "mem" : 50 }}');
+
 
     var devices = {
         "devices" : [
@@ -183,6 +202,17 @@ app.get("/savedevice", function(req, res) {
             }
         ]
     };
+
+    //Register a new Device
+    appClient.
+    registerDevice('raspi',"new01012220","token12345").then (function onSuccess (argument) {
+        console.log("Success");
+        console.log(argument);
+    }, function onError (argument) {
+        console.log("Fail");
+        console.log(argument.data);
+    });
+
     /*var devices2 =
     // Register Multiple devices
     appClient.registerMultipleDevices(devices.devices). then (
@@ -309,16 +339,12 @@ var port = appEnv.port || 8080;
 app.listen(port, function () {
     console.log("Express WebApp started on : http://localhost:" + port);
 });
-
-
 /*
 var hostPort = 4444;
 app.listen(hostPort, function () {
     console.log('Example app listening on port: ' + hostPort);
 });
 */
-
-
 //Код для публикации на Bluemix-сервере
 /*var appEnv = cfenv.getAppEnv();
  app.listen(appEnv.port, '0.0.0.0', function () {
@@ -356,16 +382,15 @@ function getOrgDevices() {
     });
     return data;
 }
-
-
 //Send email messages
 function sendAlertToEmail(device, message, email) {
     // create reusable transporter object using the default SMTP transport
     var transporter = nodemailer.createTransport({
         service: 'gmail',
+        port: parseInt(587, 10),
         auth: {
             user: 'maxim.stukolov@gmail.com',
-            pass: 'carter2014!'
+            pass: 'carter2017!'
         }
     });
 // setup email data with unicode symbols
@@ -377,5 +402,41 @@ function sendAlertToEmail(device, message, email) {
     };
 // send mail with defined transport object
     transporter.sendMail(mailOptions);
+}
+
+//Бизнес-логика, отвечающая за определение типа события по изменению веса
+function eventDeviceDefinition(deviceid, _newValue, _previousValue, _vmax){
+
+    var  delta = _newValue - _previousValue;
+    var maxDelta = 1.5
+    if(  delta > 0){
+        console.log("Объем воды увеличился");
+        if( delta  >= _vmax * 0.95 && delta <= _vmax * 1.05){
+            //controller.increment(deviceid);
+            //System.out.println("Произошла смена бутылки. Использовано: " + controller.findDeviceElement(deviceid).getQty());
+            console.log("Произошла смена бутылки");
+            decrementDeviceBottleQty(deviceid)
+            sendAlertToEmail(deviceid, "Произошла смена бутылки", "max.rocky000@yandex.ru")
+        }
+        if( delta  < _vmax * 0.98 || delta  >= _vmax * 1.02){
+            console.log("Кто-то надавил на кулер. Warning!!!");
+            //mailerClient.sender("Кто-то надавил на кулер. Warning!!!");
+        }
+    }else if( (-1)*maxDelta < delta && delta < 0){
+        console.log("Кто-то отлил водички");
+        //mailerClient.sender("Кто-то отлил водички");
+    }else if( delta == 0){
+        console.log("Объем воды не изменился");
+        //mailerClient.sender("Кто-то отлил водички");
+    }
+}
+
+function decrementDeviceBottleQty(deviceid){
+     var sql = "update devices set qtyBottle = qtyBottle-1 where devid='" + deviceid + "'";
+
+    console.log(sql)
+    db.query(sql, function (err, result) {
+        if(err) throw err;
+    });
 }
 

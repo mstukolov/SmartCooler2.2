@@ -1,8 +1,12 @@
 {
   "devices" : [
     {
-      "typeId": "orgType",
-      "deviceId": "MyCooler02"
+      "org": "kwxqcy",
+      "domain": "internetofthings.ibmcloud.com",
+      "type": "SmartCooler",
+      "id": "MyPi1",
+      "auth-key": "a-kwxqcy-1dw7hvzvwk",
+      "auth-token": "tsM8N(FS@iOc3CId+5"
     }
   ]
 }
