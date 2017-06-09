@@ -400,13 +400,21 @@
                                         <label for="emailGroup">Группа рассылки:</label>
                                         <textarea class="form-control" id="emailGroup" name="emailGroup" placeholder="Message"></textarea>
                                     </div>
+                                    <div class="form-group">
+                                        <label for="name">Название(Местоположение):</label>
+                                        <input type="text" class="form-control" id="name" name="name"/>
+                                        <label for="lng">Широта:</label>
+                                        <input type="text" class="form-control" id="lng" name="lng"/>
+                                        <label for="ltd">Долгота:</label>
+                                        <input type="text" class="form-control" id="ltd" name="ltd"/>
+                                    </div>
                                 <button type="submit" class="btn btn-default" onclick="getDeviceName()">Сохранить</button>
                                 </form>
                             </div>
                         </div>
                         <script>
                             function getDeviceName() {
-                                var device =  document.getElementById("divOrgDevId").innerHTML.split(":")[1]
+                                var device =  document.getElementById("divOrgDevId").innerHTML.split(":")[2]
                                 document.getElementById("orgDevId").value = device;
                             }
                         </script>
@@ -438,7 +446,6 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-
                             <a href="#" class="btn" data-dismiss="modal">Close</a>
                         </div>
                     </div>
@@ -487,21 +494,15 @@
                                         <th>Организация</th>
                                         <th>Код устройства</th>
                                         <th>Тип устройства</th>
+                                        <th>Название</th>
                                         <th>Кол-во бутылок</th>
                                         <th>Email</th>
+                                        <th>Широта</th>
+                                        <th>Долгота</th>
                                         <th>Управление</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr id="tr_0">
-                                        <td><output type="text" id="status" class="form-control"/></td>
-                                        <td><output type="text" id="deviceid" class="form-control"/></td>
-                                        <td><output type="text" id="name" class="form-control" /></td>
-                                        <td><output type="text" id="type" class="form-control" /></td>
-                                        <td><output type="text" id="qty" class="form-control" /></td>
-                                        <td><output type="text" id="email" class="form-control" /></td>
-                                        <td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage" class="form-control" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>
-                                    </tr>
                                     </tbody>
                                 </table>
 

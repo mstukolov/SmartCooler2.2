@@ -22,7 +22,7 @@ var options = {
 var iotfService = require("ibmiotf");
 var appClientConfig = {
     "org" : 'kwxqcy',
-    "id" : 'a-kwxqcy-app5566',
+    "id" : 'a-kwxqcy-app556678',
     "domain": "internetofthings.ibmcloud.com",
     "auth-key" : 'a-kwxqcy-1dw7hvzvwk',
     "auth-token" : 'tsM8N(FS@iOc3CId+5'
@@ -37,18 +37,12 @@ var lastdata = [];
 var set = new Set();
 
 appClient.on("deviceEvent", function (deviceType, deviceId, eventType, format, payload) {
-    /*if(lastdata.length > 4){
-        lastdata.shift()
-        var lastVal = findLastMessageByDeviceId("ESP8266-2229160");
-        if(lastVal != undefined){
-            console.log('Last value: ' + lastVal['d']['param1'])
-        }else {console.log('Last value: NULL')}
-    }*/
-        if(lastdata.length > 96){
-            lastdata.shift()
-        }
 
-        console.log("Device Event from :: "+deviceType+" : "+deviceId+" of event "+eventType+" with payload : "+payload);
+        //Ограничение по размеру стэка сообщений. Если сообщений больше чем maxLenght, то первый элемент удаляется
+        var maxLenght = 96;
+        if(lastdata.length > maxLenght){lastdata.shift()}
+
+        //console.log("Device Event from :: "+deviceType+" : "+deviceId+" of event "+eventType+" with payload : "+payload);
 
         var prevDeviceValue = 0;
         var vmax = 0;
@@ -58,19 +52,20 @@ appClient.on("deviceEvent", function (deviceType, deviceId, eventType, format, p
             vmax = findLastMessageByDeviceId(deviceId)['d']['param2']
         }
 
-
         addLastValToStack(JSON.parse(payload))
         var newDeviceValue = JSON.parse(payload)['d']['param1']
 
-        if(typeof prevDeviceValue !== "undefined"){
-            console.log('Изменение:' + prevDeviceValue + '-->' + newDeviceValue + ':' + vmax);
-            eventDeviceDefinition(deviceId, newDeviceValue, prevDeviceValue, vmax)
-        }
-
-
-
-        console.log('Total messagess: ' + lastdata.length)
-
+        //Получение группы рассылки сообщений
+        var sql = 'SELECT email from devices where devid ='+ '"' + deviceId +'";'
+        db.query(sql, function (err, result) {
+            if(err) throw err;
+            var json =  JSON.parse(JSON.stringify(result));
+            //Вызов алгоритма по определению типа события, по изменению веса
+            if(typeof prevDeviceValue !== "undefined"){
+                //console.log('Изменение:' + prevDeviceValue + '-->' + newDeviceValue + ':' + vmax);
+                eventDeviceDefinition(deviceId, newDeviceValue, prevDeviceValue, vmax, json[0].email)
+            }
+        });
 });
 function addLastValToStack(message) {
     for (var i = 0; i < lastdata.length; i++) {
@@ -111,15 +106,15 @@ app.get('/testdeviceconnection', function (req, res) {
         res.send('Success device connection from Node.js');
     });
 });
-
 app.get('/test-node-red-con', function (req, res) {
     res.send('Success device connection from Smart Coller Node.js');
 });
-
 //Изменение свойств устройства в БД MySQL на страницы devices.html
 app.get('/updateDeviceParams', function (req, res) {
     console.log('DevID:'+req.query.orgDevId+ ', ' + 'New Qty: ' + req.query.devQtyChange);
     console.log('emailGroup:'+req.query.emailGroup);
+    console.log('Location:'+req.query.lng +':' + req.query.ltd);
+    console.log('Device Name:'+req.query.name);
 
     var sql;
     //SQL-скрипт если заполнены оба поля количество и email
@@ -129,7 +124,6 @@ app.get('/updateDeviceParams', function (req, res) {
             'email=' + "'" + req.query.emailGroup + "'" +
             ' where devid=' + "'" + req.query.orgDevId + "'";
 
-        console.log(sql)
         db.query(sql, function (err, result) {
             if(err) throw err;
             qtyChangedEvent(req.query.devQtyChange, req.query.orgDevId, res)
@@ -155,6 +149,26 @@ app.get('/updateDeviceParams', function (req, res) {
         sql = "UPDATE devices SET " +
             "email='" + req.query.emailGroup + "'" +
             " where devid=" + "'" + req.query.orgDevId + "'";
+        console.log(sql)
+        db.query(sql, function (err, result) {if(err) throw err;});
+        res.redirect("devices.html")
+    }
+    //SQL-скрипт если заполнены оба поля для определения местоположения
+    if(req.query.lng !='' && req.query.ltd != '') {
+        sql = 'UPDATE devices SET ' +
+            'lng=' + req.query.lng + "," +
+            'ltd=' + "'" + req.query.ltd + "'" +
+            ' where devid=' + "'" + req.query.orgDevId + "'";
+
+        console.log(sql)
+        db.query(sql, function (err, result) {if(err) throw err;});
+        res.redirect("devices.html")
+    }
+    //SQL-скрипт заполнения, обновления поля Название
+    if(req.query.name !='') {
+        sql = "UPDATE devices SET " +
+            "name='" + req.query.name + "'" +
+            " where devid='" + req.query.orgDevId + "'";
         console.log(sql)
         db.query(sql, function (err, result) {if(err) throw err;});
         res.redirect("devices.html")
@@ -190,10 +204,7 @@ function qtyChangedEvent(newQty, deviceid, res){
         res.sendFile("devices.html", {root: __dirname + '/public/'})
     });
 }
-
 app.get("/savedevice", function(req, res) {
-
-
     var devices = {
         "devices" : [
             {
@@ -205,7 +216,7 @@ app.get("/savedevice", function(req, res) {
 
     //Register a new Device
     appClient.
-    registerDevice('raspi',"new01012220","token12345").then (function onSuccess (argument) {
+    registerDevice(req.query.devtype,req.query.devid,"12345678").then (function onSuccess (argument) {
         console.log("Success");
         console.log(argument);
     }, function onError (argument) {
@@ -272,21 +283,27 @@ app.get("/deletedevice", function(req, res) {
     var devicetype = req.query.devtype;
     var sql = 'DELETE FROM devices where devid = ?';
 
-    /*appClient.
-    unregisterDevice(devicetype, deviceid). then (function onSuccess (response) {
+    //Удаление устройства с IBM Bluemix
+    appClient.unregisterDevice(devicetype, deviceid). then (function onSuccess (response) {
         //Success callback
-        console.log("Success");
+        console.log('Device deleted from IBM Bluemix: '  + deviceid +':'+ devicetype);
         console.log(response);
+
+        db.query(sql, [deviceid], function (err, result) {
+            if(err) throw err;
+        });
+        res.redirect("devices.html")
+
     }, function onError (argument) {
         //Failure callback
         console.log("Fail");
         console.log(argument);
-    });*/
-    db.query(sql, [deviceid], function (err, result) {
+    });
+
+    /*db.query(sql, [deviceid], function (err, result) {
         if(err) throw err;
         res.send(result);
-    });
-    console.log('Device deleted: ' + deviceid);
+    });*/
 });
 app.get("/getOrgDevices", function(req, res) {
 
@@ -312,9 +329,7 @@ app.get("/testQuery", function(req, res) {
     var password = req.query.password;
     console.log('Запрос пришел: ' + network + ":" + password);
 });
-
 //работа с реле
-//включение реле
 app.get("/releon", function(req, res) {
     var on={"rel":1};
     on = JSON.stringify(on);
@@ -328,14 +343,12 @@ app.get("/releoff", function(req, res) {
     console.log('Реле остановлено');
 });
 
-
 //-----------------------
 
 //Код для запуска в локальном режиме
 
 var appEnv = cfenv.getAppEnv();
 var port = appEnv.port || 8080;
-
 app.listen(port, function () {
     console.log("Express WebApp started on : http://localhost:" + port);
 });
@@ -385,17 +398,25 @@ function getOrgDevices() {
 //Send email messages
 function sendAlertToEmail(device, message, email) {
     // create reusable transporter object using the default SMTP transport
-    var transporter = nodemailer.createTransport({
+    /*var transporter = nodemailer.createTransport({
         service: 'gmail',
         port: parseInt(587, 10),
         auth: {
             user: 'maxim.stukolov@gmail.com',
             pass: 'carter2017!'
         }
+    });*/
+    var transporter = nodemailer.createTransport({
+        host: 'smtp.office365.com',
+        port: '587',
+        auth: { user: 'Maxim.Stukolov@center2m.ru', pass: 'java2017!' },
+        secureConnection: false,
+        tls: { ciphers: 'SSLv3' }
     });
+
 // setup email data with unicode symbols
     var mailOptions = {
-        from: device, // sender address
+        from: '"C2M SmartCooler Service " <maks@center2m.com>', // sender address
         to: email, // list of receivers
         subject: device + ':Оповещение SmartCoolers ✔', // Subject line
         html: message // html body
@@ -405,38 +426,35 @@ function sendAlertToEmail(device, message, email) {
 }
 
 //Бизнес-логика, отвечающая за определение типа события по изменению веса
-function eventDeviceDefinition(deviceid, _newValue, _previousValue, _vmax){
+function eventDeviceDefinition(deviceid, _newValue, _previousValue, _vmax, emails){
 
     var  delta = _newValue - _previousValue;
     var maxDelta = 1.5
+
     if(  delta > 0){
-        console.log("Объем воды увеличился");
+        //console.log("Объем воды увеличился");
         if( delta  >= _vmax * 0.95 && delta <= _vmax * 1.05){
-            //controller.increment(deviceid);
-            //System.out.println("Произошла смена бутылки. Использовано: " + controller.findDeviceElement(deviceid).getQty());
-            console.log("Произошла смена бутылки");
-            decrementDeviceBottleQty(deviceid)
-            sendAlertToEmail(deviceid, "Произошла смена бутылки", "max.rocky000@yandex.ru")
+            decrementDeviceBottleQty(deviceid, emails);
         }
         if( delta  < _vmax * 0.98 || delta  >= _vmax * 1.02){
-            console.log("Кто-то надавил на кулер. Warning!!!");
+            //console.log("Кто-то надавил на кулер. Warning!!!");
             //mailerClient.sender("Кто-то надавил на кулер. Warning!!!");
         }
     }else if( (-1)*maxDelta < delta && delta < 0){
-        console.log("Кто-то отлил водички");
+        //console.log("Кто-то отлил водички");
         //mailerClient.sender("Кто-то отлил водички");
     }else if( delta == 0){
-        console.log("Объем воды не изменился");
+        //console.log("Объем воды не изменился");
         //mailerClient.sender("Кто-то отлил водички");
     }
 }
 
-function decrementDeviceBottleQty(deviceid){
-     var sql = "update devices set qtyBottle = qtyBottle-1 where devid='" + deviceid + "'";
-
-    console.log(sql)
+function decrementDeviceBottleQty(deviceid, emails){
+    var sql = "update devices set qtyBottle = qtyBottle-1 where devid='" + deviceid + "'";
     db.query(sql, function (err, result) {
         if(err) throw err;
+        console.log("Произошла смена бутылки");
+        sendAlertToEmail(deviceid, "Произошла смена бутылки", emails)
     });
 }
 
