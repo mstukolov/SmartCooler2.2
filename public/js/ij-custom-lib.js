@@ -36,7 +36,7 @@ function manageDevice(rowId) {
 }
 
 //Запрос к базе данных списка устройств созданных для организации
-// и заполнение таблицы id="tableAddRow" на странице devices.html
+// и заполнение таблицы id="tableAddRow" на странице devices.ejs
 function getAllDevices() {
     var orgid = 'C2M';
     var tableHeaderRowCount = 1;

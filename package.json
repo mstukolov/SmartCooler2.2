@@ -1,9 +1,9 @@
 {
-  "name": "IJlabsApplication",
+  "name": "SmartCooler21",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Stukolov Maxim",
@@ -11,7 +11,7 @@
     "body-parser": "~1.16.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.0",
-    "express": "~4.14.1",
+    "express": "2.2.x",
     "hashmap-js": "^1.0.1",
     "jade": "~1.11.0",
     "morgan": "~1.7.0",

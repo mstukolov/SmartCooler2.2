@@ -109,7 +109,7 @@ app.get('/testdeviceconnection', function (req, res) {
 app.get('/test-node-red-con', function (req, res) {
     res.send('Success device connection from Smart Coller Node.js');
 });
-//Изменение свойств устройства в БД MySQL на страницы devices.html
+//Изменение свойств устройства в БД MySQL на страницы devices.ejs
 app.get('/updateDeviceParams', function (req, res) {
     console.log('DevID:'+req.query.orgDevId+ ', ' + 'New Qty: ' + req.query.devQtyChange);
     console.log('emailGroup:'+req.query.emailGroup);
@@ -200,7 +200,7 @@ function qtyChangedEvent(newQty, deviceid, res){
                 json[0].email
             );
         }
-        //res.redirect("devices.html", {root: __dirname + '/public/'})
+        //res.redirect("devices.ejs", {root: __dirname + '/public/'})
         res.sendFile("devices.html", {root: __dirname + '/public/'})
     });
 }
