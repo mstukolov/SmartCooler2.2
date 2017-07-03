@@ -12,7 +12,7 @@ var map;
 
 //Функция инициализации страницы. Загрузка списка устройств и инициализация карты
 window.onload = function () {
-    buildDeviceList();
+
     // Создает экземпляр карты и привязывает его к созданному контейнеру
     map = new YMaps.Map(document.getElementById("YMapsID"));
     // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
@@ -25,24 +25,16 @@ window.onload = function () {
 };
 
 //Функция для формирования полного списка доступных устройств
-function buildDeviceList() {
+function buildDeviceList(userid) {
 
     var x = document.getElementById("deviceSelection");
-    var orgid = 'C2M';
-    $.get("/getOrgDevicesGPS", {orgid : orgid},function(data) {
 
+    $.get("/getUserDevicesGPS", {userid : userid},function(data) {
         selectedDevices.push(data[0].devid );
-
         for (index = 0; index < data.length; ++index) {
-            //console.log('Устройство: ' + data[index].devid + ':' + data[index].lng + ':' + data[index].ltd)
             pushDeviceNamesToArray(data[index].devid, data[index].lng, data[index].ltd, x)
         }
     })
-
-    /*devicesGPSLocation.forEach(function (item, i, data) {
-        console.log('devicesGPSLocation: ' + item['deviceid'] + ':' + item['lng'] + ':' + item['ltd'])
-    })*/
-
 }
 
 function pushDeviceNamesToArray(device_name, lng, ltd, x) {

@@ -24,6 +24,10 @@ function checkAuth (req, res, next) {
         res.render('unauthorised', { status: 403 });
         return;
     }
+    if (req.url === '/updateDeviceParams' && (!req.session || !req.session.authenticated)) {
+        res.render('unauthorised', { status: 403 });
+        return;
+    }
 
     next();
 }

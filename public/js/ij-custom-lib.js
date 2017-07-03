@@ -14,13 +14,7 @@ function DeviceTestConnection() {
 //Удаление информации об устройстве.
 function deleteDevice() {
     var res = document.getElementById("divOrgDevId").innerHTML.split(":");
-
-    console.log('Удаление устройства res[0]: ' + res[0]);
-    console.log('Удаление устройства res[1]: ' + res[1]);
-    console.log('Удаление устройства res[2]: ' + res[2]);
-
     $.get("/deletedevice?devid=" + res[2] + "&devtype=" + res[1], function(data) {});
-    getAllDevices();
     $("#modalManageWindow").modal().hide()
     $('.modal-backdrop').hide();
     location.reload();
@@ -28,17 +22,19 @@ function deleteDevice() {
 
 //Функция которая заполняет заголовок выпадающей формы управления устройством
 function manageDevice(rowId) {
-    var org =document.getElementById(rowId).childNodes[1].childNodes[0].innerHTML;
-    var device =document.getElementById(rowId).childNodes[2].childNodes[0].value;
-    var devicetype =document.getElementById(rowId).childNodes[3].childNodes[0].value;
+    var org =document.getElementById(rowId).childNodes[0].childNodes[0].innerHTML;
+    var device =document.getElementById(rowId).childNodes[1].childNodes[0].value;
+    var devicetype =document.getElementById(rowId).childNodes[2].childNodes[0].value;
     document.getElementById("divOrgDevId").innerHTML = org +':' + devicetype + ':' + device;
     console.log(rowId + ':' + org +':' + device +':' + devicetype);
 }
 
 //Запрос к базе данных списка устройств созданных для организации
 // и заполнение таблицы id="tableAddRow" на странице devices.ejs
-function getAllDevices() {
-    var orgid = 'C2M';
+function getUserDevices(userid) {
+
+    console.log("Текущий пользователь: " + userid);
+
     var tableHeaderRowCount = 1;
     var table = document.getElementById('tableAddRow');
     var rowCount = table.rows.length;
@@ -47,7 +43,7 @@ function getAllDevices() {
     }
 
 
-    $.get("/getOrgDevices", {orgid : orgid},function(data) {
+    $.get("/getUserDevices", {userid : userid}, function(data) {
         document.getElementById("devqty").innerHTML = data.length;
         var statusOn = 'glyphicon glyphicon-signal';
         var statusOff = 'glyphicon glyphicon-remove';
@@ -61,8 +57,8 @@ function getAllDevices() {
 
             //console.log(data[index].devid + ':' + data[index].devtype + ':' + data[index].orgid);
             var tempTr = $('<tr id="row'+ index +'">' +
-                '<td>' +
-                '<output id="status_' + index + '" style="font-size: larger">'+ '<span id="status-ico-'+ index +'" class="'+ statusico +'"></span>' +'</output></td>' +
+                /*'<td>' +
+                '<output id="status_' + index + '" style="font-size: larger">'+ '<span id="status-ico-'+ index +'" class="'+ statusico +'"></span>' +'</output></td>' +*/
                 '<td><output id="orgid_' + index + '" style="font-size: larger">'+ data[index].orgid +'</output></td>' +
                 '<td><output type="text" id="devid_' + index + '" style="font-size: larger">'+ data[index].devid +'</output></td>' +
                 '<td><output type="text" id="type_' + index + '" style="font-size: larger">'+ data[index].devtype +'</output></td>' +

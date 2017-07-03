@@ -1,6 +1,6 @@
 var cfenv = require("cfenv");
 require('dotenv').load();
-var config = require('./config.json');
+var config = require('./../config.json');
 
 //email dependencies
 const nodemailer = require('nodemailer');
@@ -151,7 +151,7 @@ app.get('/updateDeviceParams', function (req, res) {
             " where devid=" + "'" + req.query.orgDevId + "'";
         console.log(sql)
         db.query(sql, function (err, result) {if(err) throw err;});
-        res.redirect("devices.html")
+        res.redirect("devices")
     }
     //SQL-скрипт если заполнены оба поля для определения местоположения
     if(req.query.lng !='' && req.query.ltd != '') {
@@ -162,7 +162,7 @@ app.get('/updateDeviceParams', function (req, res) {
 
         console.log(sql)
         db.query(sql, function (err, result) {if(err) throw err;});
-        res.redirect("devices.html")
+        res.redirect("devices")
     }
     //SQL-скрипт заполнения, обновления поля Название
     if(req.query.name !='') {
@@ -171,7 +171,7 @@ app.get('/updateDeviceParams', function (req, res) {
             " where devid='" + req.query.orgDevId + "'";
         console.log(sql)
         db.query(sql, function (err, result) {if(err) throw err;});
-        res.redirect("devices.html")
+        res.redirect("devices")
     }
 
 
