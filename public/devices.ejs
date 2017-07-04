@@ -426,21 +426,18 @@
                                         //document.getElementById("row01").className  = "bg-danger";
                                     }
                                     function TurnReleON() {
-                                        $.get("/releon" ,function(data) {
+                                        var deviceid = document.getElementById("divOrgDevId").innerHTML.split(":")[2]
+                                        $.get("/releon?devid="+ deviceid,function(data) {
 
                                         })
-                                        console.log('Rele is on')
+                                        console.log('Device on: ' + deviceid)
                                     }
                                     function TurnReleOff() {
-                                        $.get("/releoff" ,function(data) {
+                                        var deviceid = document.getElementById("divOrgDevId").innerHTML.split(":")[2]
+                                        $.get("/releoff?devid="+ deviceid ,function(data) {
 
                                         })
-                                        console.log('Rele is off')
-                                    }
-                                    function testButton() {
-                                        console.log('change ico')
-                                        console.log(document.getElementById("status-ico-1"))
-                                        document.getElementById('status-ico-1').className = 'glyphicon glyphicon-remove';
+                                        console.log('Device off: ' + deviceid)
                                     }
 
                                     $(document).ready(function(){

@@ -8,7 +8,7 @@ var appEnv = cfenv.getAppEnv();
 var app = express.createServer();
 
 function checkAuth (req, res, next) {
-    console.log('checkAuth ' + req.url);
+    //console.log('checkAuth ' + req.url);
 
     // don't serve /secure to those not logged in
     // you should add to this list, for each and every secure url
