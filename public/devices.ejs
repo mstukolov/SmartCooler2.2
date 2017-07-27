@@ -311,10 +311,8 @@
                                     <div class="form-group">
                                         <label for="name">Название(Местоположение):</label>
                                         <input type="text" class="form-control" id="name" name="name"/>
-                                        <label for="lng">Широта:</label>
-                                        <input type="text" class="form-control" id="lng" name="lng"/>
-                                        <label for="ltd">Долгота:</label>
-                                        <input type="text" class="form-control" id="ltd" name="ltd"/>
+                                        <label for="address">Адрес:</label>
+                                        <input type="text" class="form-control" id="address" name="address"/>
                                     </div>
                                 <button type="submit" class="btn btn-default" onclick="getDeviceName()">Сохранить</button>
                                 </form>
@@ -329,28 +327,29 @@
                         <div class="modal-body">
 
                             <div class="panel panel-default panel-horizontal">
-                                <div class="panel-body">
-                                    <button id="releON" type="button" class="btn btn-primary btn-block"
-                                            style="height: 200px;"
-                                            onClick="TurnReleON();"><h4>Включить <br>  РЕЛЕ</h4></button>
-                                </div>
-                                <div class="panel-body">
-                                    <button id="releOff" type="button" class="btn btn-primary btn-block"
-                                            style="height: 200px;"
-                                            onClick="TurnReleOff();"><h4>Выключить <br>  РЕЛЕ</h4></button>
-                                </div>
+
                                 <div class="panel-body">
                                     <button type="button" class="btn btn-primary btn-block"
-                                            style="height: 200px;"
+                                            style="height: 100px;"
                                             onClick="deleteDevice();"><h4>Удалить <br> устройство</h4></button>
                                 </div>
                                 <div class="panel-body">
                                     <button type="button" class="btn btn-primary btn-block"
-                                            style="height: 200px;"
+                                            style="height: 100px;"
                                             onClick="DeviceTestConnection();">
                                         <h4>Проверить<br> соединение</h4>
                                     </button>
                                 </div>
+                                <!--<div class="panel-body">
+                                    <button id="releON" type="button" class="btn btn-primary btn-block hidden"
+                                            style="height: 100px;"
+                                            onClick="TurnReleON();"><h4>Включить <br>  РЕЛЕ</h4></button>
+                                </div>
+                                <div class="panel-body">
+                                    <button id="releOff" type="button" class="btn btn-primary btn-block hidden"
+                                            style="height: 100px;"
+                                            onClick="TurnReleOff();"><h4>Выключить <br>  РЕЛЕ</h4></button>
+                                </div>-->
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -392,6 +391,13 @@
                         <div class="panel-body">
 
                             <!--<h1>Current roots:</h1><%-JSON.stringify(viewRoot)%>;-->
+                            <%if (statusMessage != ''){%>
+                            <div class="alert <%=statusEvent%>">
+                                <strong>Сообщение:</strong> <%=statusMessage%>
+                            </div>
+                            <% }%>
+
+
                             <div class="table-responsive">
                                 <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Создать устройство</button>
                                <!-- <button type="button" class="btn btn-info btn-lg" onclick="testButton()" >Тестовая кнопка</button>-->
@@ -406,6 +412,7 @@
                                         <th>Название</th>
                                         <th>Кол-во бутылок</th>
                                         <th>Email</th>
+                                        <th>Адрес</th>
                                         <th>Широта</th>
                                         <th>Долгота</th>
                                         <th>Управление</th>

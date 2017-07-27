@@ -65,8 +65,9 @@ function getUserDevices(userid) {
                 '<td><output type="text" id="name_' + index + '" style="font-size: larger">'+ data[index].name +'</output></td>' +
                 '<td><output type="text" id="qty_' + index + '" style="font-size: larger">'+ data[index].qtyBottle +'</output></td>' +
                 '<td><output type="text" id="email_' + index + '" style="font-size: larger">'+ data[index].email +'</output></td>' +
-                '<td><output type="text" id="lng1_' + index + '" style="font-size: larger">'+ data[index].lng +'</output></td>' +
+                '<td><output type="text" id="addr_' + index + '" style="font-size: larger">'+ data[index].address +'</output></td>' +
                 '<td><output type="text" id="ltd1_' + index + '" style="font-size: larger">'+ data[index].ltd +'</output></td>' +
+                '<td><output type="text" id="lng1_' + index + '" style="font-size: larger">'+ data[index].lng +'</output></td>' +
                 '<td><input type="button" onClick="manageDevice(this.parentNode.parentNode.id);" id="manage_' + index + '" class="form-control btn-manage" value="Управление" data-toggle="modal" data-target="#modalManageWindow"/></td>' +
                 '</tr>');
 
